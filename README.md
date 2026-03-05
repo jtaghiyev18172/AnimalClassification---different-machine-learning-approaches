@@ -1,13 +1,3 @@
-# main architect
-
-**User:** Anonymous (suleyman.bmv@gmail.com)  
-**Created:** 3/1/2026 21:41:04  
-**Updated:** 3/6/2026 0:37:34  
-**Exported:** 3/6/2026 0:38:59  
-**Link:** [https://chatgpt.com/c/69a47a09-1c2c-8391-911b-067952e4084a](https://chatgpt.com/c/69a47a09-1c2c-8391-911b-067952e4084a)  
-
-## Response:
-```
 # AnimalClassification — Benchmarking Machine Learning Approaches for Animal Image Classification
 
 ## Overview
@@ -478,9 +468,3 @@ This allows evaluation of **accuracy vs deployment cost tradeoffs**.
 This project is intended for research and educational purposes.
 
 Dataset licenses remain with their original sources.
-```
-
-
-
----
-Powered by [ChatGPT Exporter](https://www.chatgptexporter.com)
