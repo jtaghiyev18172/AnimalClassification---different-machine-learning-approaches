@@ -1,9 +1,11 @@
 # AnimalClassification - Benchmarking Machine Learning Approaches for Animal Image Classification
 
 ![Python](https://img.shields.io/badge/python-3.12-blue)
-![PyTorch](https://img.shields.io/badge/pytorch-2.x-orange)
-![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.x-green)
-![MLflow](https://img.shields.io/badge/MLflow-experiment_tracking-purple)
+![PyTorch](https://img.shields.io/badge/pytorch-2.10.0-orange)
+![Torchvision](https://img.shields.io/badge/torchvision-0.25.0-darkgreen)
+![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.8.0-green)
+![Scikit-Image](https://img.shields.io/badge/scikit--image-0.26.0-teal)
+![MLflow](https://img.shields.io/badge/MLflow-3.10.0-purple)
 ![Status](https://img.shields.io/badge/status-work_in_progress-yellow)
 
 A structured experimental pipeline for **animal image classification** comparing:
