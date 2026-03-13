@@ -917,16 +917,7 @@ A full frozen environment snapshot can be provided separately in `requirements.t
 
 # Acknowledgements
 
-Libraries used:
-
-- PyTorch
-- Scikit-Learn
-- NumPy
-- Pandas
-- MLflow
-- Pillow
-- Matplotlib
-- ONNX
+This project was developed using the computational resources provided by **CeDAR (Center for Data Analytics and Research)** at **ADA University**.
 
 ---
 
