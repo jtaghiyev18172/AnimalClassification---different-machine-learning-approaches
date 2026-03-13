@@ -219,7 +219,7 @@ This project currently includes the following benchmarked model families and con
 
 ---
 
-# 1 — Classical Computer Vision Pipelines
+# 1 - Classical Computer Vision Pipelines
 
 These models use **handcrafted feature extractors** combined with classical machine learning classifiers.
 
@@ -359,7 +359,7 @@ StandardScaler(with_mean=False)
 
 ---
 
-# 2 — Deep Feature Pipelines
+# 2 - Deep Feature Pipelines
 
 These models use **pretrained CNN encoders** as feature extractors.
 
@@ -434,7 +434,7 @@ This retains nonlinear decision boundaries while remaining tractable.
 
 ---
 
-# 3 — CNN Trained From Scratch
+# 3 - CNN Trained From Scratch
 
 The project also explores models trained entirely from scratch.
 
@@ -762,27 +762,27 @@ AnimalClassification/
 
 ### Root notebooks
 
-- **`00_project_setup.ipynb`** — initial dataset and directory validation, class-folder checks, image counting, and random visualization.
-- **`01_data_prep_and_splits.ipynb`** — deterministic stratified split generation for `split_v1`, class distribution analysis, JSON summary export, and MLflow dataset logging.
-- **`02_transforms_and_augmentation.ipynb`** — transform configuration validation, dataset loader testing, augmented-sample visualization, and DataLoader sanity checks.
+- **`00_project_setup.ipynb`** - initial dataset and directory validation, class-folder checks, image counting, and random visualization.
+- **`01_data_prep_and_splits.ipynb`** - deterministic stratified split generation for `split_v1`, class distribution analysis, JSON summary export, and MLflow dataset logging.
+- **`02_transforms_and_augmentation.ipynb`** - transform configuration validation, dataset loader testing, augmented-sample visualization, and DataLoader sanity checks.
 
 ### Classical ML notebooks
 
-- **`10_01_hog_svm.ipynb`** — trains the HOG + approximate RBF SVM baseline using cached HOG features.
-- **`10_02_lbp_svm.ipynb`** — trains the LBP + approximate RBF SVM baseline using cached LBP histogram features.
-- **`10_03_colorhist_lr.ipynb`** — trains the HSV color histogram + logistic regression baseline.
+- **`10_01_hog_svm.ipynb`** - trains the HOG + approximate RBF SVM baseline using cached HOG features.
+- **`10_02_lbp_svm.ipynb`** - trains the LBP + approximate RBF SVM baseline using cached LBP histogram features.
+- **`10_03_colorhist_lr.ipynb`** - trains the HSV color histogram + logistic regression baseline.
 
 ### Deep feature notebooks
 
-- **`20_01_extract_embeddings_resnet50.ipynb`** — extracts and caches 2048-dimensional ResNet50 embeddings for all fixed splits.
-- **`20_02_lr_on_embeddings.ipynb`** — trains logistic regression on cached ResNet50 embeddings.
-- **`20_03_svm_on_embeddings.ipynb`** — trains an approximate RBF SVM on cached ResNet50 embeddings.
+- **`20_01_extract_embeddings_resnet50.ipynb`** - extracts and caches 2048-dimensional ResNet50 embeddings for all fixed splits.
+- **`20_02_lr_on_embeddings.ipynb`** - trains logistic regression on cached ResNet50 embeddings.
+- **`20_03_svm_on_embeddings.ipynb`** - trains an approximate RBF SVM on cached ResNet50 embeddings.
 
 ### CNN-from-scratch notebooks
 
-- **`30_00_overview.ipynb`** — validates Phase 3 readiness, shared transforms, loaders, paths, devices, and run contracts.
-- **`30_01_customcnn_v1.ipynb`** — trains the first scratch CNN baseline and benchmarks its inference speed.
-- **`30_02_customcnn_v2.ipynb`** — trains the deeper scratch CNN with batch normalization and exports comparable run artifacts.
+- **`30_00_overview.ipynb`** - validates Phase 3 readiness, shared transforms, loaders, paths, devices, and run contracts.
+- **`30_01_customcnn_v1.ipynb`** - trains the first scratch CNN baseline and benchmarks its inference speed.
+- **`30_02_customcnn_v2.ipynb`** - trains the deeper scratch CNN with batch normalization and exports comparable run artifacts.
 
 ---
 
@@ -792,55 +792,55 @@ AnimalClassification/
 
 Configuration files shared across experiments.
 
-- **`transforms_v1.yaml`** — central definition of training and evaluation preprocessing pipelines.
+- **`transforms_v1.yaml`** - central definition of training and evaluation preprocessing pipelines.
 
 ### `data/`
 
 Data assets and cached intermediate representations.
 
-- **`prepared/`** — final cleaned dataset organized by class.
-- **`splits/split_v1/`** — deterministic train/validation/test CSV manifests and `classes.json`.
-- **`processed/features/`** — cached handcrafted features such as HOG and color histograms.
-- **`processed/embeddings/`** — cached deep embeddings extracted from pretrained encoders.
+- **`prepared/`** - final cleaned dataset organized by class.
+- **`splits/split_v1/`** - deterministic train/validation/test CSV manifests and `classes.json`.
+- **`processed/features/`** - cached handcrafted features such as HOG and color histograms.
+- **`processed/embeddings/`** - cached deep embeddings extracted from pretrained encoders.
 
 ### `scripts/`
 
 Standalone data-preparation and maintenance utilities.
 
-- **`dataset_check.py`** — quick validation and inspection of dataset files.
-- **`dedup_delete.py`** — duplicate-removal cleanup utility.
-- **`huggin_face_dataset_downloader.py`** — dataset acquisition helper for Hugging Face sources.
-- **`prepare_data.py`** — dataset merge/cleanup/preparation helper.
+- **`dataset_check.py`** - quick validation and inspection of dataset files.
+- **`dedup_delete.py`** - duplicate-removal cleanup utility.
+- **`huggin_face_dataset_downloader.py`** - dataset acquisition helper for Hugging Face sources.
+- **`prepare_data.py`** - dataset merge/cleanup/preparation helper.
 
 ### `src/data/`
 
 Reusable data-pipeline code.
 
-- **`dataset_loader.py`** — reusable image dataset loader with CSV-manifest support and path normalization.
-- **`split_generator.py`** — deterministic stratified split generation and split validation utilities.
-- **`transforms.py`** — YAML-driven train/eval transform construction.
+- **`dataset_loader.py`** - reusable image dataset loader with CSV-manifest support and path normalization.
+- **`split_generator.py`** - deterministic stratified split generation and split validation utilities.
+- **`transforms.py`** - YAML-driven train/eval transform construction.
 
 ### `src/models/cnn_scratch/`
 
 Scratch-CNN implementation code.
 
-- **`models.py`** — model builders and CNN architecture definitions such as `CustomCNNv1` and `CustomCNNv2`.
-- **`utils.py`** — training loop, evaluation, checkpointing, ONNX export, curve saving, and benchmarking helpers.
+- **`models.py`** - model builders and CNN architecture definitions such as `CustomCNNv1` and `CustomCNNv2`.
+- **`utils.py`** - training loop, evaluation, checkpointing, ONNX export, curve saving, and benchmarking helpers.
 
 ### `models/`
 
 Per-run trained model artifacts.
 
-- **`ml_basic_features/`** — serialized classical ML models based on handcrafted features.
-- **`ml_deep_features/`** — classifiers trained on cached deep embeddings.
-- **`cnn_scratch/`** — checkpointed scratch CNN experiments with plots and metrics.
+- **`ml_basic_features/`** - serialized classical ML models based on handcrafted features.
+- **`ml_deep_features/`** - classifiers trained on cached deep embeddings.
+- **`cnn_scratch/`** - checkpointed scratch CNN experiments with plots and metrics.
 
 ### `reports/`
 
 Saved metrics and figures.
 
-- **`metrics/`** — exported JSON summaries for experiments and phase validation.
-- **`figures/`** — plots and visualization artifacts such as class distributions and augmentation examples.
+- **`metrics/`** - exported JSON summaries for experiments and phase validation.
+- **`figures/`** - plots and visualization artifacts such as class distributions and augmentation examples.
 
 ### `mlruns/`
 
