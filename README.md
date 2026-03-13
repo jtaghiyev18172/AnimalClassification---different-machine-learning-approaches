@@ -1,470 +1,644 @@
-# AnimalClassification — Benchmarking Machine Learning Approaches for Animal Image Classification
+# Animal Classification - Benchmarking Machine Learning Approaches for Animal Image Classification
 
-## Overview
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![PyTorch](https://img.shields.io/badge/pytorch-2.x-orange)
+![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.x-green)
+![MLflow](https://img.shields.io/badge/MLflow-experiment_tracking-purple)
+![Status](https://img.shields.io/badge/status-work_in_progress-yellow)
 
-**AnimalClassification** is a research-oriented project designed to benchmark and compare multiple machine learning approaches for **animal image classification**.
+A structured experimental pipeline for **animal image classification** comparing:
 
-The project evaluates different families of models on the **same dataset, preprocessing pipeline, and evaluation framework** to provide a fair comparison between classical computer vision methods and modern deep learning architectures.
+- classical computer vision approaches
+- deep feature extraction
+- custom CNN models trained from scratch
 
-The classification task consists of **three classes**:
+The goal of this project is to **systematically benchmark different modeling strategies** under a shared dataset split and transformation pipeline.
 
-- **Cats**
-- **Dogs**
-- **Wildlife**
+The repository is designed to be **reproducible, modular, and experiment-tracked**, allowing fair comparisons between approaches.
 
-The goal is not only to measure **classification performance**, but also to evaluate **computational efficiency and deployment cost**.
+---
 
-Metrics include:
+# Overview
 
-- Accuracy
-- Macro F1 Score
-- Precision / Recall
-- Inference latency
-- Throughput (images/sec)
-- Model size
-- Parameter count
+This project investigates how different machine learning paradigms perform on the same classification task:
 
-This allows comparison between models from both **performance** and **deployment feasibility** perspectives.
+1. **Handcrafted feature pipelines**
+2. **Deep feature extraction using pretrained models**
+3. **CNN architectures trained from scratch**
+
+All experiments share:
+
+- a **fixed dataset split**
+- a **common transformation pipeline**
+- centralized **experiment tracking**
+- standardized **metrics and reporting**
+
+The task is a **3-class image classification problem**:
+
+| Class |
+|------|
+| cats |
+| dogs |
+| wildlife |
 
 ---
 
 # Dataset
 
-The dataset is constructed by merging several public datasets:
-
-| Dataset | Description |
-|------|------|
-| Microsoft Cats vs Dogs | Internet images of cats and dogs |
-| AFHQv2 | High quality images of cats, dogs, and wild animals |
-| Animal Face Dataset (AFD) | Various wildlife species |
-| HuggingFace Animal Faces | Cat and dog facial dataset |
-
-After cleaning and deduplication the final dataset contains approximately:
-```
-
-Total images ≈ 62,659
-
-Cats ≈ 23,693  
-Dogs ≈ 22,894  
-Wildlife ≈ 16,072
+The dataset is organized using a deterministic split called:
 
 ```
-
-Dataset location:
+split_v1
 ```
 
-data/prepared/  
-cats/  
-dogs/  
-wildlife/
+Dataset sizes:
+
+| Split | Samples |
+|------|-------|
+| Train | 50,127 |
+| Validation | 6,266 |
+| Test | 6,266 |
+
+Class distribution:
+
+| Split | Cats | Dogs | Wildlife |
+|------|------|------|------|
+| Train | 18,954 | 18,315 | 12,858 |
+| Validation | 2,369 | 2,290 | 1,607 |
+| Test | 2,370 | 2,289 | 1,607 |
+
+The split manifests are stored as:
 
 ```
-
----
-
-# Dataset Splits
-
-To ensure **fair benchmarking and reproducibility**, dataset splits are generated once and reused for all experiments.
+data/splits/split_v1/
 ```
 
-Train: 80%  
-Validation: 10%  
-Test: 10%  
-Seed: 42
+Files:
 
 ```
-
-Split manifests are stored in:
-```
-
-data/splits/split\_v1/  
-train.csv  
-val.csv  
-test.csv  
+train.csv
+val.csv
+test.csv
 classes.json
-
 ```
 
-CSV format:
-```
-
-filepath,label  
-data/prepared/cats/img001.jpg,cats  
-data/prepared/dogs/img002.jpg,dogs
+Each CSV contains:
 
 ```
-
-Using CSV manifests instead of duplicating images ensures:
-
-- reproducibility
-- faster dataset loading
-- easier auditing
-- no duplicated storage
-
----
-
-# Project Structure
-```
-
-AnimalClassification/
-
-data/  
-datasets\_raw/ # original datasets  
-prepared/ # merged cleaned dataset  
-splits/  
-split\_v1/ # dataset split manifests  
-processed/ # cached features and embeddings
-
-configs/  
-transforms\_v1.yaml # shared augmentation configuration
-
-models/  
-ml\_basic\_features/  
-ml\_deep\_features/  
-cnn\_scratch/  
-cnn\_pretrained/  
-vit/
-
-notebooks/
-
-```
-00_project_setup.ipynb
-01_data_prep_and_splits.ipynb
-02_transforms_and_augmentation.ipynb
-
-10_ml_basic_features/
-20_ml_deep_features_fixed_encoder/
-30_cnn_scratch_custom/
-40_cnn_pretrained/
-50_vit/
-```
-
-reports/  
-metrics/  
-figures/
-
-src/  
-data/  
-dataset\_loader.py  
-split\_generator.py  
-transforms.py
-
-scripts/
-
-90\_evaluate\_all\_models.ipynb
-
+filepath,label
 ```
 
 ---
 
-# Experiment Pipeline
+# Image Transformations and Augmentation
 
-The overall workflow follows this pipeline:
-```
-
-Dataset preparation  
-↓  
-Dataset split generation  
-↓  
-Transform configuration  
-↓  
-Model training  
-↓  
-Model export  
-↓  
-Benchmark evaluation
+All models rely on the shared transformation configuration:
 
 ```
+configs/transforms_v1.yaml
+```
 
-All models operate on the **same dataset splits and transforms** to ensure fair comparison.
+Two transformation pipelines are defined.
 
 ---
 
-# Model Families
+## Training Transform Pipeline
 
-The project benchmarks five groups of models.
-
-## 1. Classical ML — Handcrafted Features
-
-Traditional computer vision features extracted directly from images.
-
-Examples:
-
-- HOG (Histogram of Oriented Gradients)
-- LBP (Local Binary Patterns)
-- Color Histograms
-
-Pipeline:
-```
-
-image → feature extractor → classifier
+Identifier:
 
 ```
+transforms_v1_train_runtime_aug
+```
 
-Classifiers include:
+This pipeline includes runtime augmentation to improve generalization.
 
-- Logistic Regression
-- Linear SVM
-- Kernel approximations (Nystroem)
+Typical operations include:
+
+- random horizontal flips
+- random cropping
+- random resizing
+- color normalization
+- tensor conversion
+
+Example transformation flow:
+
+```
+Image
+↓
+Random Resize
+↓
+Random Horizontal Flip
+↓
+Random Crop
+↓
+To Tensor
+↓
+Normalize (ImageNet statistics)
+```
 
 ---
 
-## 2. Classical ML — Deep Features
+## Evaluation Transform Pipeline
 
-Images are encoded using a **fixed pretrained neural network**, and the resulting embeddings are used by classical classifiers.
-
-Pipeline:
-```
-
-image → pretrained encoder → embedding → classifier
+Identifier:
 
 ```
+transforms_v1_eval_resize256_centercrop224_imagenetnorm
+```
 
-Example encoder:
+This pipeline is deterministic.
 
-- ResNet50 (ImageNet pretrained)
-
-Embeddings are cached to avoid recomputation.
+```
+Image
+↓
+Resize (256)
+↓
+Center Crop (224)
+↓
+To Tensor
+↓
+Normalize (ImageNet mean/std)
+```
 
 ---
 
-## 3. CNNs Trained From Scratch
+## Example Transformations
 
-Custom convolutional neural networks trained directly on the dataset.
-
-These models serve as a baseline for learning without transfer learning.
-
----
-
-## 4. CNNs Using Pretrained Backbones
-
-Transfer learning with pretrained networks.
-
-Small models:
-
-- ResNet18
-- MobileNetV3
-- EfficientNet-B0
-
-Medium models:
-
-- ResNet50
-- EfficientNet-B2
-
----
-
-## 5. Vision Transformers (ViT)
-
-Transformer-based architectures for image classification.
-
-Two variants are tested:
-
-- ViT trained from scratch
-- ViT fine-tuned from pretrained models
-
-Examples:
-
-- ViT Tiny
-- DeiT Small
-- ViT Base
-
----
-
-# Caching Strategy
-
-To reduce redundant computation, the project uses caching.
-
-## Dataset Splits
-```
-
-data/splits/split\_v1/
+Example visualization placeholders:
 
 ```
-
-Generated once and reused by all experiments.
-
----
-
-## Embedding Cache
-
-Deep feature embeddings are stored in:
+docs/images/transform_examples/
 ```
 
-data/processed/embeddings/  
-split\_v1/  
-encoder\_resnet50/
+Example grid showing:
+
+- original image
+- augmented variants
+- evaluation transform
 
 ```
-
-Example files:
+docs/images/augmentation_grid.png
 ```
-
-train.npy  
-val.npy  
-test.npy  
-labels\_train.npy  
-labels\_val.npy  
-labels\_test.npy
-
-```
-
-This allows multiple classifiers to reuse the same embeddings.
-
----
-
-## Transform Configuration
-
-All models use the same transform configuration defined in:
-```
-
-configs/transforms\_v1.yaml
-
-```
-
-Example configuration:
-```
-
-image\_size: 224
-
-train\_transforms:
-
-*   random\_resized\_crop
-*   random\_flip
-*   random\_rotation
-*   color\_jitter
-
-eval\_transforms:
-
-*   resize
-*   center\_crop
-*   normalize
-
-```
-
-Transforms are applied **dynamically during dataset loading**.
 
 ---
 
 # Experiment Tracking
 
-Experiments are tracked using **MLflow**.
+All experiments are tracked using **MLflow**.
 
-MLflow logs:
+Tracking directory:
+
+```
+mlruns/
+```
+
+Each training run logs:
 
 - parameters
 - metrics
 - artifacts
+- configuration
 
-Typical logged metrics:
-```
-
-accuracy  
-f1\_macro  
-precision  
-recall  
-latency\_ms  
-model\_size\_mb  
-parameter\_count
+Example run contents:
 
 ```
-
-Run artifacts include:
-```
-
-model.pkl  
-metrics.json  
-confusion\_matrix.png
-
-```
-
-MLflow tracking directory:
-```
-
-mlruns/
-
+params
+metrics
+artifacts
+config.json
 ```
 
 ---
 
-# Global Evaluation Notebook
+# Models Implemented
 
-The notebook:
+The project includes multiple model families.
+
+---
+
+# 1 — Classical Computer Vision Pipelines
+
+These models use **handcrafted feature extractors** combined with classical machine learning classifiers.
+
+Advantages:
+
+- extremely fast inference
+- interpretable features
+- minimal compute requirements
+
+---
+
+## HOG + Approximate RBF SVM
+
+Pipeline:
+
+```
+Image
+↓
+HOG feature extraction
+↓
+StandardScaler
+↓
+Nyström RBF feature mapping
+↓
+LinearSVC
 ```
 
-90\_evaluate\_all\_models.ipynb
+Purpose:
+
+Capture structural edge patterns using **Histogram of Oriented Gradients**.
+
+---
+
+## LBP + Approximate RBF SVM
+
+Pipeline:
 
 ```
-
-acts as the **central benchmarking system**.
-
-Responsibilities:
-
-- discover trained models
-- load configurations
-- run evaluation on the test dataset
-- measure inference latency
-- aggregate metrics
-- produce comparison reports
-
-Outputs:
+Image
+↓
+Local Binary Patterns
+↓
+StandardScaler
+↓
+Nyström RBF feature mapping
+↓
+LinearSVC
 ```
 
-reports/metrics/leaderboard.csv  
-reports/figures/accuracy\_vs\_latency.png  
-reports/figures/model\_size\_vs\_accuracy.png
+Purpose:
 
+Capture **local texture patterns**.
+
+---
+
+## HSV Histogram + Logistic Regression
+
+Pipeline:
+
+```
+Image
+↓
+HSV color histogram
+↓
+StandardScaler
+↓
+Logistic Regression
+```
+
+Purpose:
+
+Capture **global color distributions**.
+
+---
+
+# 2 — Deep Feature Pipelines
+
+These models use **pretrained CNN encoders** as feature extractors.
+
+The CNN weights remain **frozen**.
+
+Classifier is trained on extracted embeddings.
+
+---
+
+## Embedding Extraction
+
+Backbone:
+
+```
+ResNet50
+```
+
+Embedding dimension:
+
+```
+2048
+```
+
+Embeddings cached to:
+
+```
+data/processed/embeddings/split_v1/encoder_resnet50/
+```
+
+Files produced:
+
+```
+train.npy
+val.npy
+test.npy
+labels_train.npy
+labels_val.npy
+labels_test.npy
+meta.json
 ```
 
 ---
 
-# Reproducibility
+## Logistic Regression on ResNet50 Embeddings
 
-The project ensures reproducibility by enforcing:
+Pipeline:
 
-- fixed dataset splits
-- shared transform configuration
-- logged experiment parameters
-- saved model configurations
-- MLflow experiment tracking
-
-This guarantees that all models are evaluated under **identical conditions**.
+```
+ResNet50 embeddings
+↓
+StandardScaler
+↓
+LogisticRegression
+```
 
 ---
 
-# Project Status
+## Approximate RBF SVM on ResNet50 Embeddings
 
-Current development phases:
+Exact RBF SVM is computationally expensive at this scale.
 
-| Phase | Description |
+Approximation used:
+
+```
+StandardScaler
+↓
+Nyström RBF kernel approximation
+↓
+LinearSVC
+```
+
+This retains nonlinear decision boundaries while remaining tractable.
+
+---
+
+# 3 — CNN Trained From Scratch
+
+The project also explores models trained entirely from scratch.
+
+---
+
+## CustomCNN v1 Architecture
+
+```
+Input (224x224 RGB)
+
+Conv2D 3→32
+ReLU
+MaxPool
+
+Conv2D 32→64
+ReLU
+MaxPool
+
+Conv2D 64→128
+ReLU
+MaxPool
+
+AdaptiveAvgPool
+
+Flatten
+
+Linear 128→256
+ReLU
+Dropout 0.5
+
+Linear 256→3
+```
+
+Model size:
+
+```
+127,043 parameters
+≈0.485 MB
+```
+
+Training configuration:
+
+| Parameter | Value |
 |------|------|
-| Phase 1 | Dataset preparation and pipeline infrastructure |
-| Phase 2 | Classical ML baselines |
-| Phase 3 | CNN models trained from scratch |
-| Phase 4 | CNN transfer learning |
-| Phase 5 | Vision Transformers |
-| Phase 6 | Global model benchmarking |
+| Optimizer | Adam |
+| Learning Rate | 1e-3 |
+| Weight Decay | 1e-4 |
+| Epochs | 30 |
+| Dropout | 0.5 |
+| Scheduler | ReduceLROnPlateau |
+
+Training artifacts:
+
+```
+checkpoint.pt
+config.json
+metrics.json
+loss_curve.png
+accuracy_curve.png
+exported.onnx (optional)
+```
+
+Example curves:
+
+```
+docs/images/customcnn_v1_loss_curve.png
+docs/images/customcnn_v1_accuracy_curve.png
+```
 
 ---
 
-# Final Goal
+# Experimental Results
 
-The final output of the project will be a comprehensive benchmark comparing models across multiple dimensions.
+Current results (Phase 3 still in progress).
 
-Example leaderboard:
+| Model | Category | Test Accuracy | Macro F1 | Latency (ms/image) | Throughput (img/s) | Params | Size MB |
+|------|------|------|------|------|------|------|------|
+| HOG + RBF SVM | Handcrafted | 0.8024 | - | - | - | - | - |
+| LBP + RBF SVM | Handcrafted | 0.6432 | 0.6542 | - | - | - | - |
+| HSV Hist + Logistic Regression | Handcrafted | 0.5115 | 0.5123 | - | - | - | - |
+| ResNet50 Embeddings + Logistic Regression | Deep Features | 0.9949 | 0.9950 | - | - | - | - |
+| ResNet50 Embeddings + RBF SVM | Deep Features | 0.9877 | 0.9882 | - | - | - | - |
+| CustomCNN v1 | Scratch CNN | 0.9454 | 0.9472 | 0.194 | 5152.97 | 127043 | 0.485 |
 
-| Model | Accuracy | F1 | Latency | Params | Size |
-|------|------|------|------|------|------|
-| HOG + Logistic Regression | 0.71 | 0.69 | 2ms | - | 5MB |
-| ResNet18 | 0.89 | 0.88 | 7ms | 11M | 44MB |
-| EfficientNet-B0 | 0.91 | 0.90 | 9ms | 5M | 20MB |
-| ViT Small | 0.92 | 0.91 | 15ms | 22M | 85MB |
+Values marked with **-** will be added in the future centralized benchmark.
 
-This allows evaluation of **accuracy vs deployment cost tradeoffs**.
+---
+
+# Example Predictions
+
+Prediction examples stored in:
+
+```
+docs/images/predictions/
+```
+
+Example output:
+
+```
+cat_01_pred.png
+dog_04_pred.png
+wildlife_03_pred.png
+```
+
+Each example shows:
+
+- input image
+- predicted class
+- model confidence
+
+---
+
+# Project Structure
+
+```
+AnimalClassification/
+│
+├── configs/
+│   └── transforms_v1.yaml
+│
+├── data/
+│   ├── prepared/
+│   ├── processed/
+│   │   └── embeddings/
+│   └── splits/
+│       └── split_v1/
+│
+├── docs/
+│   └── images/
+│
+├── mlruns/
+│
+├── models/
+│   ├── ml_basic_features/
+│   ├── ml_deep_features/
+│   └── cnn_scratch/
+│
+├── notebooks/
+│   ├── 10_data_preparation/
+│   ├── 20_ml_deep_features_fixed_encoder/
+│   └── 30_cnn_scratch_custom/
+│
+├── reports/
+│   ├── metrics/
+│   └── figures/
+│
+├── src/
+│   ├── data/
+│   └── models/
+│
+├── requirements.txt
+└── README.md
+```
+
+---
+
+# Folder Descriptions
+
+### configs
+
+Configuration files controlling preprocessing and transforms.
+
+---
+
+### data
+
+Contains prepared dataset, splits, and cached embeddings.
+
+---
+
+### docs
+
+Documentation images used in the README.
+
+---
+
+### models
+
+Stores trained models and experiment outputs.
+
+Each run creates a timestamped directory.
+
+---
+
+### notebooks
+
+Experimental notebooks grouped by phase.
+
+---
+
+### reports
+
+Metrics, figures, and exported experiment summaries.
+
+---
+
+### src
+
+Reusable project code.
+
+Includes:
+
+```
+dataset loaders
+transform utilities
+model architectures
+training utilities
+evaluation helpers
+```
+
+---
+
+# Hardware
+
+Training environment detected in current runs:
+
+```
+CUDA GPU available
+```
+
+Device information and benchmarking metrics will be standardized in a future benchmarking notebook.
+
+---
+
+# Future Work
+
+Planned improvements include:
+
+- CustomCNN v2 architecture
+- centralized inference benchmark
+- additional evaluation metrics
+- ONNX export improvements
+- model comparison dashboard
+- deployment experiments
 
 ---
 
 # License
 
-This project is intended for research and educational purposes.
+MIT License
 
-Dataset licenses remain with their original sources.
+```
+MIT License
+
+Copyright (c) 2026
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files to deal in the Software
+without restriction.
+```
+
+---
+
+# Acknowledgements
+
+Libraries used:
+
+- PyTorch
+- Scikit-Learn
+- NumPy
+- Pandas
+- MLflow
+- Pillow
+- Matplotlib
+- ONNX
+
+---
+
+# Status
+
+This project is currently **in active development**.
+
+Additional models and benchmarking results will be added as experiments complete.
