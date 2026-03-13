@@ -43,7 +43,8 @@ data/**/*.gz
 # ----------------------
 # Models / training artifacts
 # ----------------------
-/models/
+
+# /models/
 checkpoints/
 *.pt
 *.pth
@@ -63,10 +64,11 @@ mlartifacts/
 # ----------------------
 # Reports (keep small metrics, ignore big images if desired)
 # ----------------------
-reports/figures/
-reports/**/*.png
-reports/**/*.jpg
-reports/**/*.jpeg
+
+# reports/figures/
+# reports/**/*.png
+# reports/**/*.jpg
+# reports/**/*.jpeg
 
 # keep metrics json/csv if you want:
 !reports/metrics/

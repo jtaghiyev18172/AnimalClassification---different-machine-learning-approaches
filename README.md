@@ -1,4 +1,4 @@
-# Animal Classification — Comparative Computer Vision Pipeline
+# AnimalClassification - Benchmarking Machine Learning Approaches for Animal Image Classification
 
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![PyTorch](https://img.shields.io/badge/pytorch-2.x-orange)
@@ -34,12 +34,16 @@ All experiments share:
 - standardized **metrics and reporting**
 
 The task is a **3-class image classification problem**:
+- cats
+- dogs
+- wildlifey
 
+<!-- 
 | Class |
 |------|
 | cats |
 | dogs |
-| wildlife |
+| wildlife | -->
 
 ---
 
@@ -163,8 +167,6 @@ The project saves a preview grid of runtime augmentations to:
 ```
 reports/figures/sample_augmented_images.png
 ```
-
-README image:
 
 This figure was generated during validation of the transformation pipeline and shows multiple stochastic augmentations of the same source image. It demonstrates how the training pipeline introduces controlled variation through cropping, flipping, rotation, and color jitter without modifying files on disk.
 

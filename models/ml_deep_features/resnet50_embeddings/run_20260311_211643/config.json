@@ -1,0 +1,41 @@
+{
+  "model_name": "resnet50_embeddings",
+  "feature_type": "resnet50_embeddings",
+  "classifier": "logreg",
+  "split_id": "split_v1",
+  "transform_id": "transforms_v1_eval_resize256_centercrop224_imagenetnorm",
+  "run_id": "run_20260311_211643",
+  "embedding_dir": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server/data/processed/embeddings/split_v1/encoder_resnet50",
+  "embedding_dim": 2048,
+  "logreg_params": {
+    "solver": "saga",
+    "C": 2.0,
+    "max_iter": 1000,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "embedding_meta": {
+    "encoder_name": "resnet50",
+    "embedding_dim": 2048,
+    "split_id": "split_v1",
+    "transform_id": "transforms_v1_eval_resize256_centercrop224_imagenetnorm",
+    "timestamp": "2026-03-11T21:02:18.756529",
+    "device": "cuda",
+    "batch_size": 128,
+    "num_workers": 8,
+    "train_count": 50127,
+    "val_count": 6266,
+    "test_count": 6266,
+    "timing_sec": {
+      "train": 40.7045111656189,
+      "val": 6.1836419105529785,
+      "test": 6.133136987686157
+    },
+    "throughput_img_per_sec": {
+      "train": 1231.4851244876224,
+      "val": 1013.3187029000611,
+      "test": 1021.6631411593446
+    },
+    "weights": "ResNet50_Weights.IMAGENET1K_V2"
+  }
+}

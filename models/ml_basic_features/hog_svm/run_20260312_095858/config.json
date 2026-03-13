@@ -1,0 +1,38 @@
+{
+  "model_name": "hog_svm",
+  "feature_type": "hog",
+  "classifier": "svm_rbf_approx_nystroem_linearsvc",
+  "split_id": "split_v1",
+  "transform_id": "pixelspace_resize224_grayscale_hog",
+  "hog_params": {
+    "orientations": 9,
+    "pixels_per_cell": [
+      8,
+      8
+    ],
+    "cells_per_block": [
+      2,
+      2
+    ],
+    "block_norm": "L2-Hys",
+    "transform_sqrt": true,
+    "feature_vector": true
+  },
+  "img_size": [
+    224,
+    224
+  ],
+  "run_id": "run_20260312_095858",
+  "nystroem_params": {
+    "kernel": "rbf",
+    "gamma": 3.8103947568968146e-05,
+    "n_components": 5000,
+    "random_state": 42
+  },
+  "linearsvc_params": {
+    "C": 1.0,
+    "random_state": 42,
+    "dual": "auto",
+    "max_iter": 5000
+  }
+}
