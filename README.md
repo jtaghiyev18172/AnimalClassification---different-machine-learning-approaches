@@ -1,5 +1,7 @@
 # AnimalClassification - Benchmarking Machine Learning Approaches for Animal Image Classification
 
+## CSCI 4701: Deep Learning Course Submission
+
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![PyTorch](https://img.shields.io/badge/pytorch-2.10.0-orange)
 ![Torchvision](https://img.shields.io/badge/torchvision-0.25.0-darkgreen)
@@ -16,7 +18,36 @@ A structured experimental pipeline for **animal image classification** comparing
 
 The goal of this project is to **systematically benchmark different modeling strategies** under a shared dataset split and transformation pipeline.
 
-The repository is designed to be **reproducible, modular, and experiment-tracked**, allowing fair comparisons between approaches.
+The repository is designed to be **reproducible, modular, and experiment-tracked**, allowing fair comparisons between approaches. The project benchmarks handcrafted-feature pipelines, pretrained deep-feature extraction, and convolutional neural networks trained from scratch on a common three-class dataset consisting of **cats, dogs, and wildlife** images.
+
+## Course Submission Information
+
+This repository is submitted as part of **CSCI 4701: Deep Learning** and represents a group project submission.
+
+### Team Members and Contribution
+
+| Student | ID | Email | Contribution |
+|------|------:|------|------:|
+| Rufiz Bayramov | 16980 | rbayramov16980@ada.edu.az | 1/3 |
+| Javad Taghiyev | 18172 | jtaghiyev18172@ada.edu.az | 1/3 |
+| Asliddin Isroilov | 16788 | aisroilov16788@ada.edu.az | 1/3 |
+
+### Scope Clarification
+
+The **core coursework contribution** of this repository is concentrated in the scratch-CNN notebooks:
+
+- `notebooks/30_cnn_scratch_custom/30_01_customcnn_v1.ipynb`
+- `notebooks/30_cnn_scratch_custom/30_02_customcnn_v2.ipynb`
+
+These notebooks contain the main implementation where course knowledge was applied most directly, including dataset loading, preprocessing, training, evaluation, and comparison of CNN architectures trained from scratch in PyTorch.
+
+Earlier parts of the repository, including several baseline models and exploratory experiments, were initiated near the beginning of the semester with the assistance of **AI tools/agents**. Those components were useful for establishing baseline comparisons and building the broader experimental framework, but some of them extend beyond the direct scope of the course syllabus.
+
+Additionally, some methods used in the notebooks were implemented before all of the corresponding theoretical material was fully covered in class. As a result, part of the implementation preceded full formal understanding, and a deeper theoretical interpretation of certain design choices was developed **post factum** as the course progressed.
+
+For a more formal project summary, experimental motivation, dataset description, architecture discussion, and milestone reporting, see:
+
+- [`documentation/DP_Byte_report_1.docx`](documentation/DP_Byte_report_1.docx)
 
 ---
 
@@ -27,6 +58,8 @@ This project investigates how different machine learning paradigms perform on th
 1. **Handcrafted feature pipelines**
 2. **Deep feature extraction using pretrained models**
 3. **CNN architectures trained from scratch**
+
+The comparison is designed to be fair by keeping dataset splits, preprocessing logic, and reporting structure as consistent as possible across experiments.
 
 All experiments share:
 
@@ -51,7 +84,7 @@ The task is a **3-class image classification problem**:
 
 # Dataset
 
-The dataset is constructed by merging several public datasets:
+The dataset is constructed by merging several public datasets in order to create a larger and more diverse three-class benchmark for animal image classification:
 
 | Dataset | Description |
 |------|------|
@@ -438,7 +471,7 @@ This retains nonlinear decision boundaries while remaining tractable.
 
 # 3 - CNN Trained From Scratch
 
-The project also explores models trained entirely from scratch.
+The project also explores models trained entirely from scratch. This is the **main course-relevant component** of the repository and is the part most directly connected to the applied deep learning material emphasized in the project submission.
 
 ---
 
@@ -642,6 +675,8 @@ ModuleNotFoundError: No module named 'onnxscript'
 
 The strongest results so far come from **fixed deep features extracted by ImageNet-pretrained ResNet50**, especially when paired with a simple logistic regression classifier. Among models trained from scratch, `CustomCNN v2` substantially improves over `CustomCNN v1`, while remaining compact enough for efficient deployment. Classical handcrafted baselines remain useful as interpretable references but are clearly outperformed by learned visual representations on this dataset.
 
+Within the context of the course submission, the most important comparison is the scratch-CNN progression from `30_01_customcnn_v1` to `30_02_customcnn_v2`, since these notebooks most directly reflect the applied deep learning work developed for the project.
+
 ---
 
 ## Scratch CNN Comparison
@@ -783,8 +818,8 @@ AnimalClassification/
 ### CNN-from-scratch notebooks
 
 - **`30_00_overview.ipynb`** - validates Phase 3 readiness, shared transforms, loaders, paths, devices, and run contracts.
-- **`30_01_customcnn_v1.ipynb`** - trains the first scratch CNN baseline and benchmarks its inference speed.
-- **`30_02_customcnn_v2.ipynb`** - trains the deeper scratch CNN with batch normalization and exports comparable run artifacts.
+- **`30_01_customcnn_v1.ipynb`** - trains the first scratch CNN baseline and benchmarks its inference speed. This notebook is one of the **primary course-submission notebooks**.
+- **`30_02_customcnn_v2.ipynb`** - trains the deeper scratch CNN with batch normalization and exports comparable run artifacts. This notebook is one of the **primary course-submission notebooks**.
 
 ---
 
@@ -936,6 +971,6 @@ Planned next steps include:
 
 # Status
 
-This project is currently **in active development**.
+This repository contains both the **course submission component** and the broader experimental project structure developed around it.
 
-Additional models and benchmarking results will be added as experiments complete.
+Additional benchmarking refinements, reporting improvements, and supporting experiments may continue to be added over time.
