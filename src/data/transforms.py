@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -99,3 +100,42 @@ def get_eval_transforms(config: Dict[str, Any]) -> transforms.Compose:
     if not isinstance(spec_list, list):
         raise ValueError("Missing or invalid 'eval_transforms' list in config.")
     return _build_from_spec_list(config, spec_list)
+
+
+def apply_size_overrides(
+    config: Dict[str, Any],
+    image_size: Optional[int] = None,
+    resize_size: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Return a deep-copied transform config with runtime size overrides applied.
+
+    This keeps the base YAML config reusable while allowing model-family notebooks
+    to safely align training/eval crop sizes with backbone-specific pretrained
+    weight expectations.
+    """
+    cfg = copy.deepcopy(config)
+
+    if image_size is not None:
+        cfg["image_size"] = int(image_size)
+    if resize_size is not None:
+        cfg["resize_size"] = int(resize_size)
+
+    for item in cfg.get("train_transforms", []):
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("name", "")).lower()
+        params = item.setdefault("params", {})
+        if name == "random_resized_crop" and image_size is not None:
+            params["size"] = int(image_size)
+
+    for item in cfg.get("eval_transforms", []):
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("name", "")).lower()
+        params = item.setdefault("params", {})
+        if name == "resize" and resize_size is not None:
+            params["size"] = int(resize_size)
+        elif name == "center_crop" and image_size is not None:
+            params["size"] = int(image_size)
+
+    return cfg
