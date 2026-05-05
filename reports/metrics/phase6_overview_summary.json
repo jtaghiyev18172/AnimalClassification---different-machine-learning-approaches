@@ -1,0 +1,57 @@
+{
+  "phase": "phase6_overview_summary",
+  "status": "ready",
+  "project_root": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server",
+  "split_id": "split_v1",
+  "transforms_config": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server/configs/transforms_v1.yaml",
+  "train_size": 50127,
+  "val_size": 6266,
+  "test_size": 6266,
+  "dataset_lengths": {
+    "train": 50127,
+    "val": 6266
+  },
+  "device_default": "cuda",
+  "supported_models": [
+    {
+      "model_name": "customvit_v1",
+      "parameter_count": 2855811,
+      "model_size_mb": 10.894054412841797,
+      "architecture": {
+        "name": "customvit_v1",
+        "family": "vit_scratch",
+        "image_size": 224,
+        "resize_size": 256,
+        "patch_size": 16,
+        "embed_dim": 192,
+        "depth": 6,
+        "num_heads": 3,
+        "mlp_ratio": 4.0,
+        "dropout_p": 0.1,
+        "attention_dropout_p": 0.0,
+        "num_classes": 3,
+        "input_channels": 3
+      }
+    },
+    {
+      "model_name": "customvit_v2",
+      "parameter_count": 6566915,
+      "model_size_mb": 25.050792694091797,
+      "architecture": {
+        "name": "customvit_v2",
+        "family": "vit_scratch",
+        "image_size": 224,
+        "resize_size": 256,
+        "patch_size": 16,
+        "embed_dim": 256,
+        "depth": 8,
+        "num_heads": 8,
+        "mlp_ratio": 4.0,
+        "dropout_p": 0.1,
+        "attention_dropout_p": 0.0,
+        "num_classes": 3,
+        "input_channels": 3
+      }
+    }
+  ]
+}

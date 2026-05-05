@@ -1,0 +1,25 @@
+{
+  "phase": "phase_3_overview",
+  "status": "ready",
+  "project_root": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server",
+  "split_id": "split_v1",
+  "train_count": 50127,
+  "val_count": 6266,
+  "test_count": 6266,
+  "class_to_idx": {
+    "cats": 0,
+    "dogs": 1,
+    "wildlife": 2
+  },
+  "transforms_config": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server/configs/transforms_v1.yaml",
+  "train_transform_id": "transforms_v1_train_runtime_aug",
+  "eval_transform_id": "transforms_v1_eval_resize256_centercrop224_imagenetnorm",
+  "device_detected": "cuda",
+  "num_workers": 8,
+  "pin_memory": true,
+  "dataset_loader_source": "src.data.dataset_loader.ImageDataset",
+  "phase3_model_dirs": {
+    "customcnn_v1": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server/models/cnn_scratch/customcnn_v1",
+    "customcnn_v2": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server/models/cnn_scratch/customcnn_v2"
+  }
+}

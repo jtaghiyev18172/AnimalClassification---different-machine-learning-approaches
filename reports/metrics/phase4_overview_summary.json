@@ -1,0 +1,42 @@
+{
+  "phase": "phase_4_overview",
+  "status": "ready",
+  "project_root": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server",
+  "split_id": "split_v1",
+  "transforms_config": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server/configs/transforms_v1.yaml",
+  "train_size": 50127,
+  "val_size": 6266,
+  "test_size": 6266,
+  "dataset_lengths": {
+    "train": 50127,
+    "val": 6266
+  },
+  "device_default": "cuda",
+  "supported_models": [
+    {
+      "model_name": "resnet18_pretrained",
+      "weights_name": "IMAGENET1K_V1",
+      "parameter_count": 11178051
+    },
+    {
+      "model_name": "mobilenet_v3_large_pretrained",
+      "weights_name": "IMAGENET1K_V2",
+      "parameter_count": 2975795
+    },
+    {
+      "model_name": "efficientnet_b0_pretrained",
+      "weights_name": "IMAGENET1K_V1",
+      "parameter_count": 4011391
+    },
+    {
+      "model_name": "resnet50_pretrained",
+      "weights_name": "IMAGENET1K_V2",
+      "parameter_count": 23514179
+    },
+    {
+      "model_name": "efficientnet_b2_pretrained",
+      "weights_name": "IMAGENET1K_V1",
+      "parameter_count": 7705221
+    }
+  ]
+}

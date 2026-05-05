@@ -1,0 +1,45 @@
+{
+  "phase": "phase5_overview_summary",
+  "status": "ready",
+  "project_root": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server",
+  "split_id": "split_v1",
+  "transforms_config": "/home/temporaryuser4/Desktop/rufiz/~/AnimalClassification/AnimalClassification_server/configs/transforms_v1.yaml",
+  "train_size": 50127,
+  "val_size": 6266,
+  "test_size": 6266,
+  "dataset_lengths": {
+    "train": 50127,
+    "val": 6266
+  },
+  "device_default": "cuda",
+  "supported_models": [
+    {
+      "model_name": "vit_b_16",
+      "weights_name": "IMAGENET1K_V1",
+      "parameter_count": 85800963,
+      "image_size": 224,
+      "resize_size": 256
+    },
+    {
+      "model_name": "swin_t",
+      "weights_name": "IMAGENET1K_V1",
+      "parameter_count": 27521661,
+      "image_size": 224,
+      "resize_size": 232
+    },
+    {
+      "model_name": "swin_v2_s",
+      "weights_name": "IMAGENET1K_V1",
+      "parameter_count": 48970749,
+      "image_size": 256,
+      "resize_size": 260
+    },
+    {
+      "model_name": "maxvit_t",
+      "weights_name": "IMAGENET1K_V1",
+      "parameter_count": 30409163,
+      "image_size": 224,
+      "resize_size": 224
+    }
+  ]
+}
