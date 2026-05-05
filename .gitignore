@@ -62,6 +62,11 @@ mlruns/
 mlartifacts/
 
 # ----------------------
+# Local audit/archive outputs (DO NOT COMMIT)
+# ----------------------
+archive/
+
+# ----------------------
 # Reports (keep small metrics, ignore big images if desired)
 # ----------------------
 

@@ -1,0 +1,38 @@
+{
+  "model_name": "resnet50_pretrained",
+  "backbone_name": "resnet50",
+  "weights_name": "IMAGENET1K_V2",
+  "split_id": "split_v1",
+  "transform_id_train": "transforms_v1_train_runtime_aug",
+  "transform_id_eval": "transforms_v1_eval_resize256_centercrop224_imagenetnorm",
+  "dataset_version": "prepared_current",
+  "training_params": {
+    "batch_size": 32,
+    "head_only_epochs": 5,
+    "finetune_epochs": 15,
+    "head_lr": 0.001,
+    "backbone_lr": 0.0001,
+    "weight_decay": 0.0001,
+    "dropout_p": 0.3,
+    "grad_clip_max_norm": 1.0,
+    "lr_factor": 0.3,
+    "lr_patience": 2,
+    "seed": 42,
+    "amp_enabled": true
+  },
+  "experiment_signature": "b7654bc5d28c9a5a",
+  "timestamp": "2026-04-03T11:41:06.360877",
+  "device_info": {
+    "device": "cuda",
+    "cuda_available": true,
+    "amp_enabled": true,
+    "num_workers": 8,
+    "batch_size": 32,
+    "gpu_name": "NVIDIA RTX A5000",
+    "gpu_total_memory_mb": 24214,
+    "cuda_device_index": 0
+  },
+  "notebook_name": "40_04_resnet50_pretrained.ipynb",
+  "model_description": "Stronger residual pretrained baseline aligned with the Phase 2 embedding model family.",
+  "run_action": "create"
+}
