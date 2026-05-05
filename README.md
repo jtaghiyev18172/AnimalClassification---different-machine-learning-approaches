@@ -39,7 +39,7 @@ Specific responsibilities were divided evenly across model families and shared i
 
 - **Rufiz Bayramov** - led the pretrained Vision Transformer and scratch-ViT experiments (`50_` and `60_` notebooks), consolidated the final benchmark table, and prepared the final result interpretation.
 - **Javad Taghiyev** -  led the reusable repository skeleton, shared training/data utilities, and scratch-CNN experiments (30_ notebooks), including custom CNN model development. Also handled the 40_ and 50_ updates covering [what those notebooks do — e.g., transfer learning, evaluation, etc.].
-- **Asliddin Isroilov** - led the handcrafted-feature baselines (`10_` notebooks) and pretrained CNN transfer-learning experiments (`40_01` to `40_05`), including run validation and comparison.
+- **Asliddin Isroilov** - led the handcrafted-feature baselines (`10_` notebooks) and pretrained CNN transfer-learning experiments (`40_01` to `40_05`), including run validation and comparison. In addition, documented 60_ notebooks explaining purpose of each cell.
 
 All members also contributed to notebook review, debugging, result checking, and final project organization.
 
