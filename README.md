@@ -43,6 +43,42 @@ Specific responsibilities were divided evenly across model families and shared i
 
 All members also contributed to notebook review, debugging, result checking, and final project organization.
 
+---
+
+## Google Colab Quick Demo
+
+The full dataset is large, and retraining the complete benchmark is computationally expensive. For quick verification, the repository includes a lightweight Colab demo package under:
+
+```text
+colab_quick_eval/
+```
+
+This demo uses a 100-image test subset and the saved weights of the trained `CustomCNN v2` scratch CNN model. It does not retrain the model; it only loads the checkpoint and runs inference/evaluation.
+
+To run the demo:
+
+1. Zip the folder:
+
+```powershell
+Compress-Archive -Path "colab_quick_eval" -DestinationPath "colab_quick_eval.zip" -Force
+```
+
+2. Open the notebook in Google Colab:
+
+```text
+colab_quick_eval/customcnn_v2_colab_eval.ipynb
+```
+
+3. Upload `colab_quick_eval.zip` to the Colab file panel.
+
+4. Run the first notebook cell. It unzips the package automatically.
+
+5. Run the remaining cells to load the trained CNN checkpoint and evaluate the 100-image demo set.
+
+The notebook reports accuracy, macro F1, throughput, confusion matrix, and a classification report for the included demo images.
+
+---
+
 ## Scope Clarification
 
 The most direct coursework contribution is concentrated in the scratch-CNN notebooks:
