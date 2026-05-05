@@ -1,6 +1,4 @@
-﻿# AnimalClassification - Benchmarking Machine Learning Approaches for Animal Image Classification
-
-## CSCI 4701: Deep Learning Course Submission
+# AnimalClassification - Benchmarking Machine Learning Approaches for Animal Image Classification
 
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![PyTorch](https://img.shields.io/badge/pytorch-2.10.0-orange)
@@ -13,15 +11,15 @@
 A structured experimental pipeline for **animal image classification** comparing:
 
 - classical computer vision approaches
-- deep feature extraction with a fixed pretrained encoder
+- deep feature extraction
 - custom CNN models trained from scratch
-- ImageNet-pretrained CNN transfer learning
-- ImageNet-pretrained Vision Transformer-family transfer learning
+- pretrained CNN transfer learning
+- pretrained Vision Transformer families
 - custom Vision Transformers trained from scratch
 
-The goal of this project is to **systematically benchmark different modeling strategies** under a shared dataset split, transformation pipeline, and experiment-tracking setup.
+The goal of this project is to **systematically benchmark different modeling strategies** under a shared dataset split and transformation pipeline.
 
-The repository is designed to be **reproducible, modular, and experiment-tracked**, allowing fair comparisons between approaches on a common three-class dataset consisting of **cats, dogs, and wildlife** images.
+The repository is designed to be **reproducible, modular, and experiment-tracked**, allowing fair comparisons between approaches. The project benchmarks handcrafted-feature pipelines, pretrained deep-feature extraction, convolutional neural networks trained from scratch, and pretrained CNN transfer-learning models on a common three-class dataset consisting of **cats, dogs, and wildlife** images.
 
 ---
 
@@ -39,16 +37,28 @@ This repository is submitted as part of **CSCI 4701: Deep Learning** and represe
 
 ## Scope Clarification
 
-The **core coursework contribution** of this repository is concentrated in the scratch-CNN notebooks:
+The most direct coursework contribution is concentrated in the scratch-CNN notebooks:
 
 - `notebooks/30_cnn_scratch_custom/30_01_customcnn_v1.ipynb`
 - `notebooks/30_cnn_scratch_custom/30_02_customcnn_v2.ipynb`
 
-These notebooks contain the main implementation where course knowledge was applied most directly, including dataset loading, augmentation, model definition, optimization, regularization, training, evaluation, and comparison of CNN architectures trained from scratch in PyTorch.
+These notebooks apply the core deep learning material most explicitly: CNN architecture design, data augmentation, optimization, regularization, batch normalization, training loops, validation, checkpointing, and model evaluation in PyTorch.
 
-The project was later expanded into a broader benchmark that also includes classical machine learning baselines, fixed pretrained feature extraction, pretrained CNN transfer learning, pretrained Vision Transformer-family models, and custom Vision Transformers from scratch. These additional experiments provide a stronger comparative context for understanding the behavior of scratch-trained deep learning models.
+Several later notebooks are also directly related to the course syllabus:
 
-Earlier parts of the repository, including some baseline models and exploratory utilities, were initiated near the beginning of the semester with the assistance of AI tools/agents. Those components were useful for establishing baseline comparisons and building the broader experimental framework, but the final repository has been organized, audited, rerun, and documented as a coherent course project.
+- `notebooks/40_cnn_pretrained/40_01_resnet18_pretrained.ipynb`
+- `notebooks/40_cnn_pretrained/40_02_mobilenet_v3_large_pretrained.ipynb`
+- `notebooks/40_cnn_pretrained/40_03_efficientnet_b0_pretrained.ipynb`
+- `notebooks/40_cnn_pretrained/40_04_resnet50_pretrained.ipynb`
+- `notebooks/40_cnn_pretrained/40_05_efficientnet_b2_pretrained.ipynb`
+- `notebooks/50_vit/50_01_vit_b_16.ipynb`
+- `notebooks/50_vit/50_02_swin_t.ipynb`
+- `notebooks/50_vit/50_03_swin_v2_s.ipynb`
+- `notebooks/50_vit/50_04_maxvit_t.ipynb`
+
+The `40_` notebooks connect directly to pretrained CNN architectures, transfer learning, and fine-tuning, including ResNet, MobileNet, and EfficientNet-style models. The selected `50_` notebooks are included as a course-adjacent extension because visual transformers were briefly covered and they provide a modern attention-based comparison point against CNN families.
+
+Earlier baseline and framework components, including classical ML baselines, fixed deep-feature extraction, exploratory utilities, and some project scaffolding, were initiated near the beginning of the semester with assistance from AI tools/agents. Those components are retained for benchmarking context, while the final repository has been organized, audited, rerun, and documented as a coherent course project.
 
 Some implementation work also preceded the full formal coverage of the corresponding theory in class. As the course progressed, the project was updated with stronger interpretation of optimization, regularization, convolutional inductive bias, transfer learning, and attention-based architectures.
 
@@ -97,7 +107,7 @@ The task is a **3-class image classification problem**:
 - dogs
 - wildlife
 
-<!-- 
+<!--
 | Class |
 |------|
 | cats |
@@ -120,10 +130,10 @@ The dataset is constructed by merging several public datasets in order to create
 After cleaning and deduplication the final dataset contains approximately:
 
 ```
-Total images в‰€ 62,659
-cats в‰€ 23.7k
-dogs в‰€ 23.8k
-wildlife в‰€ 16k
+Total images ~= 62,659
+cats ~= 23.7k
+dogs ~= 23.8k
+wildlife ~= 16k
 ```
 
 The dataset is organized using a deterministic split called:
@@ -313,13 +323,13 @@ Pipeline:
 
 ```
 Image
-в†“
+v
 HOG feature extraction
-в†“
+v
 StandardScaler
-в†“
-NystrГ¶m RBF feature mapping
-в†“
+v
+Nystrom RBF feature mapping
+v
 LinearSVC
 ```
 
@@ -329,7 +339,7 @@ Capture structural edge patterns using **Histogram of Oriented Gradients**.
 
 Feature extraction details:
 
-- images resized to `224Г—224`
+- images resized to `224x224`
 - converted to grayscale
 - HOG parameters:
   - `orientations = 9`
@@ -346,8 +356,8 @@ Classifier pipeline:
 
 ```
 StandardScaler(with_mean=False)
-в†’ NystrГ¶m(kernel="rbf", n_components=5000, gamma=1/26244)
-в†’ LinearSVC(C=1.0, max_iter=5000)
+-> Nystrom(kernel="rbf", n_components=5000, gamma=1/26244)
+-> LinearSVC(C=1.0, max_iter=5000)
 ```
 
 ---
@@ -358,13 +368,13 @@ Pipeline:
 
 ```
 Image
-в†“
+v
 Local Binary Patterns
-в†“
+v
 StandardScaler
-в†“
-NystrГ¶m RBF feature mapping
-в†“
+v
+Nystrom RBF feature mapping
+v
 LinearSVC
 ```
 
@@ -374,7 +384,7 @@ Capture **local texture patterns**.
 
 Feature extraction details:
 
-- images resized to `224Г—224`
+- images resized to `224x224`
 - converted to grayscale
 - Local Binary Pattern parameters:
   - `P = 8`
@@ -389,8 +399,8 @@ Classifier pipeline:
 
 ```
 StandardScaler(with_mean=False)
-в†’ NystrГ¶m(kernel="rbf", n_components=2000, gamma=1/10)
-в†’ LinearSVC(C=1.0, max_iter=5000)
+-> Nystrom(kernel="rbf", n_components=2000, gamma=1/10)
+-> LinearSVC(C=1.0, max_iter=5000)
 ```
 
 ---
@@ -401,11 +411,11 @@ Pipeline:
 
 ```
 Image
-в†“
+v
 HSV color histogram
-в†“
+v
 StandardScaler
-в†“
+v
 Logistic Regression
 ```
 
@@ -415,7 +425,7 @@ Capture **global color distributions**.
 
 Feature extraction details:
 
-- images resized to `224Г—224`
+- images resized to `224x224`
 - converted from RGB to HSV
 - 32-bin histograms computed for each channel:
   - H: 32 bins
@@ -430,7 +440,7 @@ Classifier pipeline:
 
 ```
 StandardScaler(with_mean=False)
-в†’ LogisticRegression(solver="saga", C=2.0, max_iter=500)
+-> LogisticRegression(solver="saga", C=2.0, max_iter=500)
 ```
 
 ---
@@ -459,13 +469,13 @@ Cached embedding arrays:
 
 ```
 data/processed/embeddings/split_v1/encoder_resnet50/
-в”њв”Ђв”Ђ train.npy
-в”њв”Ђв”Ђ val.npy
-в”њв”Ђв”Ђ test.npy
-в”њв”Ђв”Ђ labels_train.npy
-в”њв”Ђв”Ђ labels_val.npy
-в”њв”Ђв”Ђ labels_test.npy
-в””в”Ђв”Ђ meta.json
+|-- train.npy
+|-- val.npy
+|-- test.npy
+|-- labels_train.npy
+|-- labels_val.npy
+|-- labels_test.npy
+`-- meta.json
 ```
 
 Embedding tensor shapes:
@@ -484,9 +494,9 @@ Pipeline:
 
 ```
 ResNet50 embeddings
-в†“
+v
 StandardScaler
-в†“
+v
 LogisticRegression
 ```
 
@@ -500,9 +510,9 @@ Approximation used:
 
 ```
 StandardScaler
-в†“
-NystrГ¶m RBF kernel approximation
-в†“
+v
+Nystrom RBF kernel approximation
+v
 LinearSVC
 ```
 
@@ -521,15 +531,15 @@ The project also explores models trained entirely from scratch.
 ```
 Input (224x224 RGB)
 
-Conv2D 3в†’32
+Conv2D 3->32
 ReLU
 MaxPool
 
-Conv2D 32в†’64
+Conv2D 32->64
 ReLU
 MaxPool
 
-Conv2D 64в†’128
+Conv2D 64->128
 ReLU
 MaxPool
 
@@ -537,18 +547,18 @@ AdaptiveAvgPool
 
 Flatten
 
-Linear 128в†’256
+Linear 128->256
 ReLU
 Dropout 0.5
 
-Linear 256в†’3
+Linear 256->3
 ```
 
 Model size:
 
 ```
 127,043 parameters
-в‰€0.485 MB
+~=0.485 MB
 ```
 
 Training configuration:
@@ -584,12 +594,12 @@ Artifacts saved to:
 
 ```
 models/cnn_scratch/customcnn_v1/run_20260313_095856/
-в”њв”Ђв”Ђ checkpoint.pt
-в”њв”Ђв”Ђ config.json
-в”њв”Ђв”Ђ metrics.json
-в”њв”Ђв”Ђ loss_curve.png
-в”њв”Ђв”Ђ accuracy_curve.png
-в””в”Ђв”Ђ exported.onnx
+|-- checkpoint.pt
+|-- config.json
+|-- metrics.json
+|-- loss_curve.png
+|-- accuracy_curve.png
+`-- exported.onnx
 ```
 
 ONNX export was attempted but failed in this run due to a missing dependency:
@@ -610,28 +620,28 @@ Architecture:
 Input (224x224 RGB)
 
 Block 1
-Conv2D 3в†’32
+Conv2D 3->32
 BatchNorm2d
 ReLU
-Conv2D 32в†’32
+Conv2D 32->32
 BatchNorm2d
 ReLU
 MaxPool
 
 Block 2
-Conv2D 32в†’64
+Conv2D 32->64
 BatchNorm2d
 ReLU
-Conv2D 64в†’64
+Conv2D 64->64
 BatchNorm2d
 ReLU
 MaxPool
 
 Block 3
-Conv2D 64в†’128
+Conv2D 64->128
 BatchNorm2d
 ReLU
-Conv2D 128в†’128
+Conv2D 128->128
 BatchNorm2d
 ReLU
 MaxPool
@@ -684,12 +694,12 @@ Artifacts saved to:
 
 ```
 models/cnn_scratch/customcnn_v2/run_20260313_114741/
-в”њв”Ђв”Ђ checkpoint.pt
-в”њв”Ђв”Ђ config.json
-в”њв”Ђв”Ђ metrics.json
-в”њв”Ђв”Ђ loss_curve.png
-в”њв”Ђв”Ђ accuracy_curve.png
-в””в”Ђв”Ђ exported.onnx
+|-- checkpoint.pt
+|-- config.json
+|-- metrics.json
+|-- loss_curve.png
+|-- accuracy_curve.png
+`-- exported.onnx
 ```
 
 ONNX export was attempted but failed in this run due to a missing dependency:
@@ -782,11 +792,11 @@ Artifacts saved to:
 
 ```
 models/cnn_pretrained/resnet18_pretrained/run_20260403_103808/
-в”њв”Ђв”Ђ checkpoint.pt
-в”њв”Ђв”Ђ config.json
-в”њв”Ђв”Ђ metrics.json
-в”њв”Ђв”Ђ loss_curve.png
-в””в”Ђв”Ђ accuracy_curve.png
+|-- checkpoint.pt
+|-- config.json
+|-- metrics.json
+|-- loss_curve.png
+`-- accuracy_curve.png
 ```
 
 ---
@@ -834,11 +844,11 @@ Artifacts saved to:
 
 ```
 models/cnn_pretrained/mobilenet_v3_large_pretrained/run_20260403_111528/
-в”њв”Ђв”Ђ checkpoint.pt
-в”њв”Ђв”Ђ config.json
-в”њв”Ђв”Ђ metrics.json
-в”њв”Ђв”Ђ loss_curve.png
-в””в”Ђв”Ђ accuracy_curve.png
+|-- checkpoint.pt
+|-- config.json
+|-- metrics.json
+|-- loss_curve.png
+`-- accuracy_curve.png
 ```
 
 ---
@@ -886,11 +896,11 @@ Artifacts saved to:
 
 ```
 models/cnn_pretrained/efficientnet_b0_pretrained/run_20260403_111752/
-в”њв”Ђв”Ђ checkpoint.pt
-в”њв”Ђв”Ђ config.json
-в”њв”Ђв”Ђ metrics.json
-в”њв”Ђв”Ђ loss_curve.png
-в””в”Ђв”Ђ accuracy_curve.png
+|-- checkpoint.pt
+|-- config.json
+|-- metrics.json
+|-- loss_curve.png
+`-- accuracy_curve.png
 ```
 
 ---
@@ -938,11 +948,11 @@ Artifacts saved to:
 
 ```
 models/cnn_pretrained/resnet50_pretrained/run_20260403_114106/
-в”њв”Ђв”Ђ checkpoint.pt
-в”њв”Ђв”Ђ config.json
-в”њв”Ђв”Ђ metrics.json
-в”њв”Ђв”Ђ loss_curve.png
-в””в”Ђв”Ђ accuracy_curve.png
+|-- checkpoint.pt
+|-- config.json
+|-- metrics.json
+|-- loss_curve.png
+`-- accuracy_curve.png
 ```
 
 ---
@@ -990,11 +1000,11 @@ Artifacts saved to:
 
 ```
 models/cnn_pretrained/efficientnet_b2_pretrained/run_20260403_121522/
-в”њв”Ђв”Ђ checkpoint.pt
-в”њв”Ђв”Ђ config.json
-в”њв”Ђв”Ђ metrics.json
-в”њв”Ђв”Ђ loss_curve.png
-в””в”Ђв”Ђ accuracy_curve.png
+|-- checkpoint.pt
+|-- config.json
+|-- metrics.json
+|-- loss_curve.png
+`-- accuracy_curve.png
 ```
 
 ---
@@ -1737,4 +1747,4 @@ This project was developed using the computational resources provided by **CeDAR
 
 # Status
 
-This course report reflects the completed local artifacts for the reported benchmark families: handcrafted classical ML, fixed deep features, scratch CNNs, pretrained CNN transfer learning, pretrained ViT transfer learning, and custom ViTs from scratch.
+This project currently contains completed local artifacts for the reported benchmark families: handcrafted classical ML, fixed deep features, scratch CNNs, pretrained CNN transfer learning, pretrained ViT transfer learning, and custom ViTs from scratch.
