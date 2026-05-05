@@ -75,7 +75,6 @@ Some implementation work also preceded the full formal coverage of the correspon
 - [Pretrained Vision Transformer Transfer Learning](#5---pretrained-vision-transformer-transfer-learning)
 - [Vision Transformers From Scratch](#6---vision-transformers-from-scratch)
 - [Experimental Results](#experimental-results)
-- [Current Stored Figures and Artifacts](#current-stored-figures-and-artifacts)
 - [Loss Curve Snapshot](#loss-curve-snapshot)
 - [Project Structure](#project-structure)
 - [Hardware](#hardware)
@@ -1416,50 +1415,6 @@ The strongest completed result comes from **MaxViT-T Pretrained**, which achieve
 ## Scratch ViT Comparison
 
 `CustomViT v2` improves over `CustomViT v1` by increasing embedding dimension from **192** to **256**, encoder depth from **6** to **8**, and attention heads from **3** to **8**. This increases parameter count from **2,855,811** to **6,566,915** and raises test macro F1 from **0.9449** to **0.9523**. The result is educationally useful because it demonstrates the effect of scaling Transformer capacity from scratch, while also showing that convolutional inductive bias remains valuable on this dataset when pretraining is not used.
-
----
-
-## Current Stored Figures and Artifacts
-
-The repository already contains generated artifacts from preprocessing and training runs, including:
-
-- `reports/figures/sample_augmented_images.png`
-- `models/cnn_scratch/customcnn_v1/run_20260313_095856/loss_curve.png`
-- `models/cnn_scratch/customcnn_v1/run_20260313_095856/accuracy_curve.png`
-- `models/cnn_scratch/customcnn_v2/run_20260313_114741/loss_curve.png`
-- `models/cnn_scratch/customcnn_v2/run_20260313_114741/accuracy_curve.png`
-- `models/cnn_pretrained/resnet18_pretrained/run_20260403_103808/loss_curve.png`
-- `models/cnn_pretrained/resnet18_pretrained/run_20260403_103808/accuracy_curve.png`
-- `models/cnn_pretrained/mobilenet_v3_large_pretrained/run_20260403_111528/loss_curve.png`
-- `models/cnn_pretrained/mobilenet_v3_large_pretrained/run_20260403_111528/accuracy_curve.png`
-- `models/cnn_pretrained/efficientnet_b0_pretrained/run_20260403_111752/loss_curve.png`
-- `models/cnn_pretrained/efficientnet_b0_pretrained/run_20260403_111752/accuracy_curve.png`
-- `models/cnn_pretrained/resnet50_pretrained/run_20260403_114106/loss_curve.png`
-- `models/cnn_pretrained/resnet50_pretrained/run_20260403_114106/accuracy_curve.png`
-- `models/cnn_pretrained/efficientnet_b2_pretrained/run_20260403_121522/loss_curve.png`
-- `models/cnn_pretrained/efficientnet_b2_pretrained/run_20260403_121522/accuracy_curve.png`
-- `models/vit/vit_b_16/run_20260427_102658/checkpoint.pt`
-- `models/vit/vit_b_16/run_20260427_102658/loss_curve.png`
-- `models/vit/vit_b_16/run_20260427_102658/accuracy_curve.png`
-- `models/vit/swin_t/run_20260427_110425/checkpoint.pt`
-- `models/vit/swin_t/run_20260427_110425/loss_curve.png`
-- `models/vit/swin_t/run_20260427_110425/accuracy_curve.png`
-- `models/vit/swin_v2_s/run_20260427_112808/checkpoint.pt`
-- `models/vit/swin_v2_s/run_20260427_112808/loss_curve.png`
-- `models/vit/swin_v2_s/run_20260427_112808/accuracy_curve.png`
-- `models/vit/maxvit_t/run_20260429_095644/checkpoint.pt`
-- `models/vit/maxvit_t/run_20260429_095644/loss_curve.png`
-- `models/vit/maxvit_t/run_20260429_095644/accuracy_curve.png`
-- `models/vit_scratch/customvit_v1/run_20260505_102351/checkpoint.pt`
-- `models/vit_scratch/customvit_v1/run_20260505_102351/loss_curve.png`
-- `models/vit_scratch/customvit_v1/run_20260505_102351/accuracy_curve.png`
-- `models/vit_scratch/customvit_v2/run_20260505_111414/checkpoint.pt`
-- `models/vit_scratch/customvit_v2/run_20260505_111414/loss_curve.png`
-- `models/vit_scratch/customvit_v2/run_20260505_111414/accuracy_curve.png`
-
-These artifacts support both qualitative inspection and reproducibility of the reported experiments.
-
----
 
 ## Loss Curve Snapshot
 
