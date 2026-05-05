@@ -1,0 +1,31 @@
+{
+  "model_name": "customcnn_v2",
+  "split_id": "split_v1",
+  "transform_id_train": "transforms_v1_train_runtime_aug",
+  "transform_id_eval": "transforms_v1_eval_resize256_centercrop224_imagenetnorm",
+  "dataset_version": "prepared_dataset_current",
+  "training_params": {
+    "epochs": 30,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "dropout_p": 0.5,
+    "grad_clip_max_norm": 1.0,
+    "optimizer": "Adam",
+    "scheduler": {
+      "name": "ReduceLROnPlateau",
+      "mode": "min",
+      "factor": 0.3,
+      "patience": 3
+    },
+    "loss_fn": "CrossEntropyLoss",
+    "seed": 42
+  },
+  "timestamp": "2026-03-13T11:47:41.819192",
+  "num_classes": 3,
+  "class_to_idx": {
+    "cats": 0,
+    "dogs": 1,
+    "wildlife": 2
+  }
+}

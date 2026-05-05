@@ -1,0 +1,43 @@
+{
+  "model_name": "maxvit_t",
+  "backbone_name": "maxvit_t",
+  "weights_name": "IMAGENET1K_V1",
+  "split_id": "split_v1",
+  "transform_id_train": "transforms_v1_train_runtime_aug_crop224",
+  "transform_id_eval": "transforms_v1_eval_resize224_centercrop224_imagenetnorm",
+  "dataset_version": "prepared_current",
+  "training_params": {
+    "batch_size": 16,
+    "head_only_epochs": 5,
+    "finetune_epochs": 15,
+    "head_lr": 0.001,
+    "backbone_lr": 0.0001,
+    "weight_decay": 0.0001,
+    "dropout_p": 0.3,
+    "grad_clip_max_norm": 1.0,
+    "lr_factor": 0.3,
+    "lr_patience": 2,
+    "seed": 42,
+    "amp_enabled": true,
+    "input_image_size": 224,
+    "eval_resize_size": 224
+  },
+  "experiment_signature": "1e28555470a8865b",
+  "timestamp": "2026-04-29T09:56:44.665217",
+  "device_info": {
+    "device": "cuda",
+    "cuda_available": true,
+    "amp_enabled": true,
+    "num_workers": 8,
+    "batch_size": 16,
+    "gpu_name": "NVIDIA RTX A5000",
+    "gpu_total_memory_mb": 24214,
+    "cuda_device_index": 0
+  },
+  "notebook_name": "50_04_maxvit_t.ipynb",
+  "model_description": "MaxViT tiny pretrained baseline combining convolutional and attention blocks.",
+  "run_action": "create",
+  "input_image_size": 224,
+  "eval_resize_size": 224,
+  "model_family_group": "vit"
+}
