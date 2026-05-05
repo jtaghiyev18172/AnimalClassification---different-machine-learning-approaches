@@ -35,6 +35,14 @@ This repository is submitted as part of **CSCI 4701: Deep Learning** and represe
 | Javad Taghiyev | 18172 | jtaghiyev18172@ada.edu.az | 1/3 |
 | Asliddin Isroilov | 16788 | aisroilov16788@ada.edu.az | 1/3 |
 
+Specific responsibilities were divided evenly across model families and shared infrastructure:
+
+- **Rufiz Bayramov** - led the pretrained Vision Transformer and scratch-ViT experiments (`50_` and `60_` notebooks), consolidated the final benchmark table, and prepared the final result interpretation.
+- **Javad Taghiyev** - led the reusable repository skeleton, shared training/data utilities, and scratch-CNN experiments (`30_` notebooks), including custom CNN model development.
+- **Asliddin Isroilov** - led the handcrafted-feature baselines (`10_` notebooks) and pretrained CNN transfer-learning experiments (`40_01` to `40_05`), including run validation and comparison.
+
+All members also contributed to notebook review, debugging, result checking, and final project organization.
+
 ## Scope Clarification
 
 The most direct coursework contribution is concentrated in the scratch-CNN notebooks:
@@ -58,15 +66,14 @@ Several later notebooks are also directly related to the course syllabus:
 
 The `40_` notebooks connect directly to pretrained CNN architectures, transfer learning, and fine-tuning, including ResNet, MobileNet, and EfficientNet-style models. The selected `50_` notebooks are included as a course-adjacent extension because visual transformers were briefly covered and they provide a modern attention-based comparison point against CNN families.
 
-Earlier baseline and framework components, including classical ML baselines, fixed deep-feature extraction, exploratory utilities, and some project scaffolding, were initiated near the beginning of the semester with assistance from AI tools/agents. Those components are retained for benchmarking context, while the final repository has been organized, audited, rerun, and documented as a coherent course project.
-
-Some implementation work also preceded the full formal coverage of the corresponding theory in class. As the course progressed, the project was updated with stronger interpretation of optimization, regularization, convolutional inductive bias, transfer learning, and attention-based architectures.
+Together, the completed experiments connect the course topics to a concrete benchmark: data augmentation, optimization, regularization, CNN design, transfer learning, fine-tuning, residual architectures, efficient pretrained backbones, and attention-based image classifiers.
 
 ---
 
 # Table of Contents
 
 - [Course Submission Information](#course-submission-information)
+- [Setup and Installation](#setup-and-installation)
 - [Overview](#overview)
 - [Dataset](#dataset)
 - [Experiment Tracking](#experiment-tracking)
@@ -75,9 +82,36 @@ Some implementation work also preceded the full formal coverage of the correspon
 - [Pretrained Vision Transformer Transfer Learning](#5---pretrained-vision-transformer-transfer-learning)
 - [Vision Transformers From Scratch](#6---vision-transformers-from-scratch)
 - [Experimental Results](#experimental-results)
+- [Limitations](#limitations)
 - [Loss Curve Snapshot](#loss-curve-snapshot)
 - [Project Structure](#project-structure)
 - [Hardware](#hardware)
+
+---
+
+# Setup and Installation
+
+Recommended local setup on Windows:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+Equivalent setup on Linux/macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+The notebooks use repository-relative paths and select CUDA automatically when a compatible GPU is available. GPU execution is recommended for the neural-network notebooks, while the classical ML notebooks can run on CPU.
+
+The prepared dataset should be available under `data/prepared/`, and the deterministic split manifests should be available under `data/splits/split_v1/`.
 
 ---
 
@@ -306,141 +340,34 @@ This project includes the following implemented and benchmarked model families a
 
 # 1 - Classical Computer Vision Pipelines
 
-These models use **handcrafted feature extractors** combined with classical machine learning classifiers.
-
-Advantages:
-
-- extremely fast inference
-- interpretable features
-- minimal compute requirements
-
----
+The first benchmark family uses handcrafted image descriptors with conventional machine-learning classifiers. These models provide a non-deep-learning reference point for evaluating how much is gained by learned visual representations.
 
 ## HOG + Approximate RBF SVM
 
-Pipeline:
+This pipeline extracts Histogram of Oriented Gradients features from resized RGB images and applies an approximate RBF-kernel SVM using Nystrom feature mapping followed by a linear SVM. It is the strongest handcrafted-feature baseline.
 
-```
-Image
-v
-HOG feature extraction
-v
-StandardScaler
-v
-Nystrom RBF feature mapping
-v
-LinearSVC
-```
-
-Purpose:
-
-Capture structural edge patterns using **Histogram of Oriented Gradients**.
-
-Feature extraction details:
-
-- images resized to `224x224`
-- converted to grayscale
-- HOG parameters:
-  - `orientations = 9`
-  - `pixels_per_cell = (8, 8)`
-  - `cells_per_block = (2, 2)`
-  - `block_norm = L2-Hys`
-  - `transform_sqrt = True`
-
-Cached feature dimensionality:
-
-- **26,244 features per image**
-
-Classifier pipeline:
-
-```
-StandardScaler(with_mean=False)
--> Nystrom(kernel="rbf", n_components=5000, gamma=1/26244)
--> LinearSVC(C=1.0, max_iter=5000)
-```
-
----
+- **Feature representation:** HOG descriptor on 224x224 images
+- **Classifier:** Nystrom RBF approximation + LinearSVC
+- **Test accuracy:** 0.8024
+- **Test macro F1:** 0.8040
 
 ## LBP + Approximate RBF SVM
 
-Pipeline:
+This pipeline represents each image using Local Binary Pattern texture histograms and applies the same approximate RBF-SVM strategy. It captures local texture better than color-only features but is weaker than HOG and much weaker than deep features.
 
-```
-Image
-v
-Local Binary Patterns
-v
-StandardScaler
-v
-Nystrom RBF feature mapping
-v
-LinearSVC
-```
-
-Purpose:
-
-Capture **local texture patterns**.
-
-Feature extraction details:
-
-- images resized to `224x224`
-- converted to grayscale
-- Local Binary Pattern parameters:
-  - `P = 8`
-  - `R = 1`
-  - `method = "uniform"`
-
-LBP codes are converted into an L1-normalized histogram with:
-
-- **10 features per image**
-
-Classifier pipeline:
-
-```
-StandardScaler(with_mean=False)
--> Nystrom(kernel="rbf", n_components=2000, gamma=1/10)
--> LinearSVC(C=1.0, max_iter=5000)
-```
-
----
+- **Feature representation:** LBP texture histogram
+- **Classifier:** Nystrom RBF approximation + LinearSVC
+- **Test accuracy:** 0.6432
+- **Test macro F1:** 0.6542
 
 ## HSV Histogram + Logistic Regression
 
-Pipeline:
+This baseline uses color-distribution statistics in HSV space with logistic regression. It is intentionally simple and shows that color alone is insufficient for reliable animal classification.
 
-```
-Image
-v
-HSV color histogram
-v
-StandardScaler
-v
-Logistic Regression
-```
-
-Purpose:
-
-Capture **global color distributions**.
-
-Feature extraction details:
-
-- images resized to `224x224`
-- converted from RGB to HSV
-- 32-bin histograms computed for each channel:
-  - H: 32 bins
-  - S: 32 bins
-  - V: 32 bins
-
-The concatenated histogram is L1-normalized, producing:
-
-- **96 features per image**
-
-Classifier pipeline:
-
-```
-StandardScaler(with_mean=False)
--> LogisticRegression(solver="saga", C=2.0, max_iter=500)
-```
+- **Feature representation:** HSV color histogram
+- **Classifier:** Logistic regression
+- **Test accuracy:** 0.5115
+- **Test macro F1:** 0.5123
 
 ---
 
@@ -589,23 +516,6 @@ Inference benchmark (measured on GPU in the training environment):
 - **Throughput:** 5152.97 images/sec
 - **Timed batches:** 20
 
-Artifacts saved to:
-
-```
-models/cnn_scratch/customcnn_v1/run_20260313_095856/
-|-- checkpoint.pt
-|-- config.json
-|-- metrics.json
-|-- loss_curve.png
-|-- accuracy_curve.png
-`-- exported.onnx
-```
-
-ONNX export was attempted but failed in this run due to a missing dependency:
-
-```
-ModuleNotFoundError: No module named 'onnxscript'
-```
 
 ---
 
@@ -689,563 +599,158 @@ Test accuracy: 0.9714
 Test macro F1: 0.9722
 ```
 
-Artifacts saved to:
-
-```
-models/cnn_scratch/customcnn_v2/run_20260313_114741/
-|-- checkpoint.pt
-|-- config.json
-|-- metrics.json
-|-- loss_curve.png
-|-- accuracy_curve.png
-`-- exported.onnx
-```
-
-ONNX export was attempted but failed in this run due to a missing dependency:
-
-```
-ModuleNotFoundError: No module named 'onnxscript'
-```
 
 ---
 
 # 4 - Pretrained CNN Transfer Learning
 
-Phase 4 extends the benchmark to **end-to-end pretrained CNN classifiers** initialized from official ImageNet weights in `torchvision`.
+Phase 4 evaluates end-to-end transfer learning with ImageNet-pretrained CNN backbones from `torchvision`. Each model replaces the original classifier with a 3-class head, first trains the new head, and then partially fine-tunes the final backbone stage. This directly connects to the course topics of pretrained CNN architectures, transfer learning, fine-tuning, residual networks, efficient CNNs, and batch-normalized convolutional representations.
 
-Unlike the fixed-embedding pipelines in Phase 2, these models:
+Shared setup:
 
-- replace the original ImageNet classification head with a 3-class head
-- train the new head first with the backbone frozen
-- then partially fine-tune the pretrained backbone
-- log the same benchmark outputs used by the scratch CNN family:
-  - checkpoint
-  - config
-  - metrics
-  - training curves
-  - latency and throughput estimates
-
-Shared transfer-learning training recipe:
-
-| Parameter | Value |
-|------|------|
-| Head-only epochs | 5 |
-| Partial fine-tuning epochs | 15 |
-| Optimizer | AdamW |
-| Head learning rate | 1e-3 |
-| Backbone learning rate | 1e-4 |
-| Weight decay | 1e-4 |
-| Scheduler | ReduceLROnPlateau |
-| Gradient clipping | 1.0 |
-| Seed | 42 |
-
-All models use:
-
-- `split_v1`
-- `transforms_v1`
-- ImageNet normalization
-- the same project-level MLflow and artifact conventions as the `30_` notebooks
-
----
+- dataset split: `split_v1`
+- preprocessing: `transforms_v1` with ImageNet normalization
+- optimizer: AdamW
+- scheduler: ReduceLROnPlateau
+- batch size: 64
+- seed: 42
+- device in completed runs: CUDA
 
 ## ResNet18 Pretrained
 
-Architecture summary:
+ResNet18 is the lightweight residual-network baseline. Its final `fc` layer was replaced with `Dropout(0.3) -> Linear(... -> 3)`, with `layer4` unfrozen during fine-tuning.
 
-- ImageNet-pretrained `torchvision` ResNet18
-- original `fc` replaced with:
-  - `Dropout(0.3) -> Linear(... -> 3)`
-- Stage 1:
-  - train classifier head only
-- Stage 2:
-  - unfreeze `layer4` and continue fine-tuning
-
-Weights:
-
-- `IMAGENET1K_V1`
-
-Model size:
-
-```
-11,178,051 parameters
-~42.68 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 13
+- **Weights:** `IMAGENET1K_V1`
+- **Parameters:** 11,178,051
+- **Size:** 42.678 MB
 - **Best validation macro F1:** 0.9951
-
-Test result:
-
-- **Test loss:** 0.0206
 - **Test accuracy:** 0.9947
 - **Test macro F1:** 0.9949
-
-Inference benchmark:
-
-- **Latency per image:** 0.2786 ms
-- **Throughput:** 3588.84 images/sec
-
-Artifacts saved to:
-
-```
-models/cnn_pretrained/resnet18_pretrained/run_20260403_103808/
-|-- checkpoint.pt
-|-- config.json
-|-- metrics.json
-|-- loss_curve.png
-`-- accuracy_curve.png
-```
-
----
+- **Latency:** 0.2786 ms/image
+- **Throughput:** 3588.84 img/s
 
 ## MobileNetV3 Large Pretrained
 
-Architecture summary:
+MobileNetV3 Large represents a mobile-efficient CNN family. Its classifier was replaced with a 3-class dropout head, and the final feature block group was unfrozen for fine-tuning.
 
-- ImageNet-pretrained `torchvision` MobileNetV3 Large
-- final classifier replaced with:
-  - `Dropout(0.3) -> Linear(... -> 3)`
-- Stage 1:
-  - train classifier only
-- Stage 2:
-  - unfreeze the final feature block group and fine-tune
-
-Weights:
-
-- `IMAGENET1K_V2`
-
-Model size:
-
-```
-2,974,835 parameters
-~11.44 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 8
+- **Weights:** `IMAGENET1K_V2`
+- **Parameters:** 2,974,835
+- **Size:** 11.442 MB
 - **Best validation macro F1:** 0.9933
-
-Test result:
-
-- **Test loss:** 0.0264
 - **Test accuracy:** 0.9914
 - **Test macro F1:** 0.9918
-
-Inference benchmark:
-
-- **Latency per image:** 0.4396 ms
-- **Throughput:** 2275.05 images/sec
-
-Artifacts saved to:
-
-```
-models/cnn_pretrained/mobilenet_v3_large_pretrained/run_20260403_111528/
-|-- checkpoint.pt
-|-- config.json
-|-- metrics.json
-|-- loss_curve.png
-`-- accuracy_curve.png
-```
-
----
+- **Latency:** 0.4396 ms/image
+- **Throughput:** 2275.05 img/s
 
 ## EfficientNet-B0 Pretrained
 
-Architecture summary:
+EfficientNet-B0 provides a compound-scaled CNN baseline. The classifier was replaced with a 3-class dropout head, and the final feature stage was fine-tuned.
 
-- ImageNet-pretrained `torchvision` EfficientNet-B0
-- final classifier replaced with:
-  - `Dropout(0.3) -> Linear(... -> 3)`
-- Stage 1:
-  - train classifier only
-- Stage 2:
-  - unfreeze the final feature stage and fine-tune
-
-Weights:
-
-- `IMAGENET1K_V1`
-
-Model size:
-
-```
-4,011,391 parameters
-~15.46 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 13
+- **Weights:** `IMAGENET1K_V1`
+- **Parameters:** 4,011,391
+- **Size:** 15.463 MB
 - **Best validation macro F1:** 0.9945
-
-Test result:
-
-- **Test loss:** 0.0261
 - **Test accuracy:** 0.9928
 - **Test macro F1:** 0.9932
-
-Inference benchmark:
-
-- **Latency per image:** 0.4424 ms
-- **Throughput:** 2260.58 images/sec
-
-Artifacts saved to:
-
-```
-models/cnn_pretrained/efficientnet_b0_pretrained/run_20260403_111752/
-|-- checkpoint.pt
-|-- config.json
-|-- metrics.json
-|-- loss_curve.png
-`-- accuracy_curve.png
-```
-
----
+- **Latency:** 0.4424 ms/image
+- **Throughput:** 2260.58 img/s
 
 ## ResNet50 Pretrained
 
-Architecture summary:
+ResNet50 is the stronger residual CNN transfer-learning baseline. Its final `fc` layer was replaced with a 3-class dropout head, and `layer4` was unfrozen during fine-tuning.
 
-- ImageNet-pretrained `torchvision` ResNet50
-- original `fc` replaced with:
-  - `Dropout(0.3) -> Linear(... -> 3)`
-- Stage 1:
-  - train classifier head only
-- Stage 2:
-  - unfreeze `layer4` and fine-tune
-
-Weights:
-
-- `IMAGENET1K_V2`
-
-Model size:
-
-```
-23,514,179 parameters
-~89.90 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 18
+- **Weights:** `IMAGENET1K_V2`
+- **Parameters:** 23,514,179
+- **Size:** 89.903 MB
 - **Best validation macro F1:** 0.9973
-
-Test result:
-
-- **Test loss:** 0.0232
 - **Test accuracy:** 0.9959
 - **Test macro F1:** 0.9961
-
-Inference benchmark:
-
-- **Latency per image:** 0.5290 ms
-- **Throughput:** 1890.34 images/sec
-
-Artifacts saved to:
-
-```
-models/cnn_pretrained/resnet50_pretrained/run_20260403_114106/
-|-- checkpoint.pt
-|-- config.json
-|-- metrics.json
-|-- loss_curve.png
-`-- accuracy_curve.png
-```
-
----
+- **Latency:** 0.5290 ms/image
+- **Throughput:** 1890.34 img/s
 
 ## EfficientNet-B2 Pretrained
 
-Architecture summary:
+EfficientNet-B2 tests a larger compound-scaled CNN than EfficientNet-B0 under the same transfer-learning design.
 
-- ImageNet-pretrained `torchvision` EfficientNet-B2
-- final classifier replaced with:
-  - `Dropout(0.3) -> Linear(... -> 3)`
-- Stage 1:
-  - train classifier only
-- Stage 2:
-  - unfreeze the final feature stage and fine-tune
-
-Weights:
-
-- `IMAGENET1K_V1`
-
-Model size:
-
-```
-7,705,221 parameters
-~29.65 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 12
+- **Weights:** `IMAGENET1K_V1`
+- **Parameters:** 7,705,221
+- **Size:** 29.651 MB
 - **Best validation macro F1:** 0.9949
-
-Test result:
-
-- **Test loss:** 0.0267
 - **Test accuracy:** 0.9938
 - **Test macro F1:** 0.9941
-
-Inference benchmark:
-
-- **Latency per image:** 0.5408 ms
-- **Throughput:** 1849.21 images/sec
-
-Artifacts saved to:
-
-```
-models/cnn_pretrained/efficientnet_b2_pretrained/run_20260403_121522/
-|-- checkpoint.pt
-|-- config.json
-|-- metrics.json
-|-- loss_curve.png
-`-- accuracy_curve.png
-```
-
----
-
-As with the scratch-CNN runs, ONNX export was attempted during Phase 4 but failed because the required export dependency was not available:
-
-```
-ModuleNotFoundError: No module named 'onnxscript'
-```
+- **Latency:** 0.5408 ms/image
+- **Throughput:** 1849.21 img/s
 
 ---
 
 # 5 - Pretrained Vision Transformer Transfer Learning
 
-Phase 5 extends the benchmark from convolutional ImageNet backbones to pretrained transformer-family image classifiers from `torchvision`.
+Phase 5 compares modern pretrained transformer-family image classifiers against the CNN families. Each model uses official `torchvision` ImageNet weights and replaces the original classifier with a 3-class head for cats, dogs, and wildlife.
 
-These models follow the same transfer-learning contract as the pretrained CNN notebooks:
+Shared setup:
 
-- load official ImageNet pretrained weights
-- replace the original classification head with a 3-class project head
-- train the new head first with the backbone frozen
-- partially fine-tune the pretrained backbone
-- log checkpoint, config, metrics, curves, latency, throughput, parameter count, and model size through MLflow
-
-Shared training recipe:
-
-| Parameter | Value |
-|------|------|
-| Head-only epochs | 5 |
-| Partial fine-tuning epochs | 15 |
-| Optimizer | AdamW |
-| Head learning rate | 1e-3 |
-| Backbone learning rate | 1e-4 |
-| Weight decay | 1e-4 |
-| Seed | 42 |
-| Device in completed runs | CUDA |
-
-The completed Phase 5 runs are stored under both `models/vit/` and MLflow artifacts.
-
----
+- dataset split: `split_v1`
+- optimizer: AdamW
+- scheduler: ReduceLROnPlateau
+- batch size: 32
+- seed: 42
+- device in completed runs: CUDA
 
 ## ViT-B16 Pretrained
 
-Architecture summary:
+ViT-B/16 is the plain Vision Transformer baseline using non-overlapping 16x16 patches and global self-attention.
 
-- ImageNet-pretrained `torchvision` ViT-B/16
-- plain Vision Transformer baseline with non-overlapping 16x16 patches
-- original classification head replaced with a 3-class head
-- input image size: 224
-- evaluation transform: resize 256, center crop 224, ImageNet normalization
-
-Weights:
-
-- `IMAGENET1K_V1`
-
-Model size:
-
-```
-85,800,963 parameters
-~327.30 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 13
-- **Best validation loss:** 0.0197
+- **Weights:** `IMAGENET1K_V1`
+- **Input size:** 224
+- **Parameters:** 85,800,963
+- **Size:** 327.305 MB
 - **Best validation macro F1:** 0.9977
-
-Test result:
-
-- **Test loss:** 0.0237
 - **Test accuracy:** 0.9968
 - **Test macro F1:** 0.9969
-
-Inference benchmark:
-
-- **Latency per image:** 1.5236 ms
-- **Throughput:** 656.32 images/sec
-
-Artifacts saved to:
-
-```
-models/vit/vit_b_16/run_20260427_102658/
-- checkpoint.pt
-- config.json
-- metrics.json
-- loss_curve.png
-- accuracy_curve.png
-```
-
----
+- **Latency:** 1.5236 ms/image
+- **Throughput:** 656.32 img/s
 
 ## Swin-T Pretrained
 
-Architecture summary:
+Swin-T represents hierarchical shifted-window attention, which improves locality and efficiency compared with plain global-attention ViT.
 
-- ImageNet-pretrained `torchvision` Swin-T
-- hierarchical shifted-window transformer baseline
-- original classifier replaced with a 3-class head
-- input image size: 224
-- evaluation transform: resize 232, center crop 224, ImageNet normalization
-
-Weights:
-
-- `IMAGENET1K_V1`
-
-Model size:
-
-```
-27,521,661 parameters
-~105.21 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 9
-- **Best validation loss:** 0.0141
+- **Weights:** `IMAGENET1K_V1`
+- **Input size:** 224
+- **Parameters:** 27,521,661
+- **Size:** 105.207 MB
 - **Best validation macro F1:** 0.9982
-
-Test result:
-
-- **Test loss:** 0.0180
 - **Test accuracy:** 0.9973
 - **Test macro F1:** 0.9974
-
-Inference benchmark:
-
-- **Latency per image:** 0.8609 ms
-- **Throughput:** 1161.54 images/sec
-
-Artifacts saved to:
-
-```
-models/vit/swin_t/run_20260427_110425/
-- checkpoint.pt
-- config.json
-- metrics.json
-- loss_curve.png
-- accuracy_curve.png
-```
-
----
+- **Latency:** 0.8609 ms/image
+- **Throughput:** 1161.54 img/s
 
 ## Swin V2-S Pretrained
 
-Architecture summary:
+Swin V2-S is a second-generation shifted-window Transformer with a larger parameter count and 256x256 input resolution.
 
-- ImageNet-pretrained `torchvision` Swin V2-S
-- second-generation hierarchical shifted-window transformer baseline
-- original classifier replaced with a 3-class head
-- input image size: 256
-- evaluation transform: resize 260, center crop 256, ImageNet normalization
-
-Weights:
-
-- `IMAGENET1K_V1`
-
-Model size:
-
-```
-48,970,749 parameters
-~187.60 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 4
-- **Best validation loss:** 0.0132
+- **Weights:** `IMAGENET1K_V1`
+- **Input size:** 256
+- **Parameters:** 48,970,749
+- **Size:** 187.600 MB
 - **Best validation macro F1:** 0.9978
-
-Test result:
-
-- **Test loss:** 0.0162
 - **Test accuracy:** 0.9962
 - **Test macro F1:** 0.9963
-
-Inference benchmark:
-
-- **Latency per image:** 2.1057 ms
-- **Throughput:** 474.91 images/sec
-
-Artifacts saved to:
-
-```
-models/vit/swin_v2_s/run_20260427_112808/
-- checkpoint.pt
-- config.json
-- metrics.json
-- loss_curve.png
-- accuracy_curve.png
-```
-
----
+- **Latency:** 2.1057 ms/image
+- **Throughput:** 474.91 img/s
 
 ## MaxViT-T Pretrained
 
-Architecture summary:
+MaxViT-T combines convolutional inductive bias with local and grid attention, making it a strong hybrid CNN-attention baseline.
 
-- ImageNet-pretrained `torchvision` MaxViT-T
-- hybrid convolution-attention backbone with local and grid attention
-- original classifier replaced with a 3-class head
-- input image size: 224
-- evaluation transform: resize 224, ImageNet normalization
-
-Weights:
-
-- `IMAGENET1K_V1`
-
-Model size:
-
-```
-30,409,163 parameters
-~116.59 MB
-```
-
-Best validation result:
-
-- **Best epoch:** 15
-- **Best validation loss:** 0.0188
+- **Weights:** `IMAGENET1K_V1`
+- **Input size:** 224
+- **Parameters:** 30,409,163
+- **Size:** 116.587 MB
 - **Best validation macro F1:** 0.9978
-
-Test result:
-
-- **Test loss:** 0.0182
 - **Test accuracy:** 0.9974
 - **Test macro F1:** 0.9976
-
-Inference benchmark:
-
-- **Latency per image:** 1.3636 ms
-- **Throughput:** 733.37 images/sec
-
-Artifacts saved to:
-
-```
-models/vit/maxvit_t/run_20260429_095644/
-- checkpoint.pt
-- config.json
-- metrics.json
-- loss_curve.png
-- accuracy_curve.png
-```
+- **Latency:** 1.3636 ms/image
+- **Throughput:** 733.37 img/s
 
 ---
 
@@ -1266,14 +771,7 @@ Both custom ViTs use:
 - layer normalization and dropout
 - a final classification head for 3 animal classes
 
-The scratch-ViT notebooks follow the same rerun-safe artifact contract used by the scratch CNN and transfer-learning notebooks:
-
-- deterministic run directories
-- checkpoint saving
-- config and metrics export
-- loss and accuracy curves
-- MLflow tracking
-- latency and throughput benchmarking
+The scratch-ViT notebooks follow the same reproducible training and evaluation structure used by the scratch CNN and transfer-learning notebooks, including checkpointing, metrics export, MLflow tracking, and latency/throughput benchmarking.
 
 ---
 
@@ -1314,16 +812,6 @@ Inference benchmark:
 - **Latency per image:** 0.2587 ms
 - **Throughput:** 3865.15 images/sec
 
-Artifacts saved to:
-
-```
-models/vit_scratch/customvit_v1/run_20260505_102351/
-- checkpoint.pt
-- config.json
-- metrics.json
-- loss_curve.png
-- accuracy_curve.png
-```
 
 ---
 
@@ -1364,16 +852,6 @@ Inference benchmark:
 - **Latency per image:** 0.4416 ms
 - **Throughput:** 2264.60 images/sec
 
-Artifacts saved to:
-
-```
-models/vit_scratch/customvit_v2/run_20260505_111414/
-- checkpoint.pt
-- config.json
-- metrics.json
-- loss_curve.png
-- accuracy_curve.png
-```
 
 ---
 
@@ -1402,7 +880,9 @@ models/vit_scratch/customvit_v2/run_20260505_111414/
 
 *Note: This table reports the completed benchmark runs available in the local repository. Metrics not applicable to the classical pipelines are shown as `-`.*
 
-The strongest completed result comes from **MaxViT-T Pretrained**, which achieves **0.9974 test accuracy** and **0.9976 test macro F1**. `Swin-T Pretrained` is extremely close while being lighter and faster than ViT-B/16. Among pretrained CNNs, `ResNet50 Pretrained` remains the strongest CNN transfer-learning result, and `ResNet18 Pretrained` remains an excellent efficiency baseline. The earlier **fixed ResNet50 embedding** baseline remains extremely strong, showing that the dataset benefits heavily from pretrained visual representations. Among models trained from scratch, `CustomCNN v2` is the strongest scratch CNN, while `CustomViT v2` improves over `CustomViT v1` but does not outperform the scratch CNN family.
+The results show a clear progression across modeling families. Handcrafted features provide useful baselines, but their accuracy remains far below learned representations. Fixed ResNet50 embeddings already perform extremely well, showing that ImageNet-pretrained visual features transfer strongly to this animal classification task. End-to-end pretrained CNN fine-tuning improves further, with **ResNet50 Pretrained** reaching **0.9959 test accuracy** and **0.9961 macro F1**. The pretrained transformer-family models are the strongest overall: **MaxViT-T Pretrained** achieves the best completed result with **0.9974 test accuracy** and **0.9976 macro F1**, while **Swin-T Pretrained** is nearly as accurate and more efficient than ViT-B/16.
+
+The scratch-trained models are educationally important even though they do not reach the pretrained models. `CustomCNN v2` improves substantially over `CustomCNN v1`, confirming the value of deeper convolutional blocks and batch normalization. `CustomViT v2` improves over `CustomViT v1`, but both scratch ViTs remain behind the scratch CNNs and far behind pretrained ViT-family models. This supports the expected conclusion that Vision Transformers benefit strongly from large-scale pretraining, while CNNs retain useful inductive bias when training from scratch on a moderate-size dataset.
 
 ---
 
@@ -1415,6 +895,20 @@ The strongest completed result comes from **MaxViT-T Pretrained**, which achieve
 ## Scratch ViT Comparison
 
 `CustomViT v2` improves over `CustomViT v1` by increasing embedding dimension from **192** to **256**, encoder depth from **6** to **8**, and attention heads from **3** to **8**. This increases parameter count from **2,855,811** to **6,566,915** and raises test macro F1 from **0.9449** to **0.9523**. The result is educationally useful because it demonstrates the effect of scaling Transformer capacity from scratch, while also showing that convolutional inductive bias remains valuable on this dataset when pretraining is not used.
+
+---
+
+## Limitations
+
+The benchmark should be interpreted within several practical limits:
+
+- The evaluation uses one constructed animal-classification dataset and one deterministic split, so the exact ranking may not fully generalize to unrelated datasets or harder fine-grained recognition tasks.
+- No separate external test set was available, so the reported test results measure performance on the held-out portion of `split_v1` rather than on an independently collected dataset.
+- Pretrained CNN and ViT models have a major advantage because they start from ImageNet visual representations, while the scratch CNNs and scratch ViTs learn only from the project dataset.
+- Hyperparameter search was intentionally limited to keep the project feasible within a course timeline, so some models may improve with more extensive tuning.
+- The classical ML baselines and scratch-trained models did not match pretrained deep models, but this is an expected and useful finding rather than a pipeline failure.
+
+---
 
 ## Loss Curve Snapshot
 
@@ -1591,7 +1085,7 @@ Reusable data-pipeline code.
 Scratch-CNN implementation code.
 
 - **`models.py`** - model builders and CNN architecture definitions such as `CustomCNNv1` and `CustomCNNv2`.
-- **`utils.py`** - training loop, evaluation, checkpointing, ONNX export, curve saving, and benchmarking helpers.
+- **`utils.py`** - training loop, evaluation, checkpointing, curve saving, and benchmarking helpers.
 
 ### `src/models/cnn_pretrained/`
 
@@ -1650,7 +1144,6 @@ Observed training environment in the provided experiment runs:
 - neural model training and inference benchmarking ran on **GPU**
 - batch sizes vary by model family and memory requirements
 - runtime artifacts record the selected device, parameter count, model size, latency, and throughput where applicable
-- the migration workflow supports separate Windows and Linux machines by relying on repository-relative paths and saved artifacts
 
 ---
 
