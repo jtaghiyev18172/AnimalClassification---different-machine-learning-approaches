@@ -31,9 +31,9 @@ This repository is submitted as part of **CSCI 4701: Deep Learning** and represe
 
 | Student | ID | Email | Contribution |
 |------|------:|------|------:|
-| Rufiz Bayramov | 16980 | rbayramov16980@ada.edu.az | 50% |
-| Javad Taghiyev | 18172 | jtaghiyev18172@ada.edu.az | 25% |
-| Asliddin Isroilov | 16788 | aisroilov16788@ada.edu.az | 25% |
+| Rufiz Bayramov | 16980 | rbayramov16980@ada.edu.az | 34% |
+| Javad Taghiyev | 18172 | jtaghiyev18172@ada.edu.az | 33% |
+| Asliddin Isroilov | 16788 | aisroilov16788@ada.edu.az | 33% |
 
 Specific responsibilities were divided evenly across model families and shared infrastructure:
 
